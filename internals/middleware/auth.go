@@ -34,7 +34,18 @@ func JWTAuth() fiber.Handler {
 		c.Locals("user_id", claims.UserID)
 		c.Locals("company_id", claims.CompanyID)
 		c.Locals("branch_id", claims.BranchID)
+		c.Locals("role", claims.Role)
 
+		return c.Next()
+	}
+}
+
+func AuthorizeRole(requiredRole string) fiber.Handler {
+	return func(c *fiber.Ctx) error {
+		userRole, ok := c.Locals("role").(string)
+		if !ok || userRole != requiredRole {
+			return c.Status(fiber.StatusForbidden).JSON(fiber.Map{"error": "Forbidden"})
+		}
 		return c.Next()
 	}
 }

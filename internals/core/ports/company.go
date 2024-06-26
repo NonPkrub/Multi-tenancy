@@ -8,11 +8,14 @@ import (
 
 type CompanyService interface {
 	Register(register *domain.RegisterInput) (*domain.DataReply, error)
-	Login(login *domain.LoginInput) (*domain.DataReply, error)
+	Login(login *domain.LoginInput) (*domain.DataReply, string, error)
 	GetData(data *domain.DataInput) (*domain.DataReply, error)
 	UpdateData(data *domain.DataUpdate) (*domain.DataReply, error)
 	GetAllData() ([]domain.DataReply, error)
 	DeleteData(data *domain.DataDelete) error
+	GetMe(data *domain.Me) (*domain.DataReply, error)
+
+	Admin(data *domain.Admin) (*domain.DataReply, error)
 }
 
 type CompanyRepository interface {
@@ -22,6 +25,7 @@ type CompanyRepository interface {
 	UpdateData(data *domain.Data) (*domain.Data, error)
 	GetAllData() ([]domain.Data, error)
 	DeleteData(data *domain.Data) error
+	GetMe(data *domain.Data) (*domain.Data, error)
 }
 
 type CompanyHandler interface {
@@ -31,4 +35,7 @@ type CompanyHandler interface {
 	UpdateData(c *fiber.Ctx) error
 	GetAllData(c *fiber.Ctx) error
 	DeleteData(c *fiber.Ctx) error
+	GetMe(c *fiber.Ctx) error
+
+	Admin(c *fiber.Ctx) error
 }

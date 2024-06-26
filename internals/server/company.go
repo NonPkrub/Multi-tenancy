@@ -24,13 +24,15 @@ func (s *CompanyServer) Initialize() {
 
 	company := v1.Group("company")
 	company.Post("/register", s.company.Register)
+	company.Post("/admin", s.company.Admin)
 	company.Post("/login", s.company.Login)
-	company.Get("", s.company.GetAllData)
 	company.Use(middleware.JWTAuth())
 	{
-		company.Get("/data/:companyID/:branchID", s.company.GetData)
-		company.Put("/data/:companyID/:branchID/:userID", s.company.UpdateData)
-		company.Delete("/data/:companyID/:branchID/:userID", s.company.DeleteData)
+		company.Get("", middleware.AuthorizeRole("admin"), s.company.GetAllData)
+		company.Get("/data", middleware.AuthorizeRole("admin"), s.company.GetData)
+		company.Get("/data", s.company.GetMe)
+		company.Put("/data", s.company.UpdateData)
+		company.Delete("/data", s.company.DeleteData)
 	}
 	app.Listen(fmt.Sprintf(":%v", viper.GetInt("app.port")))
 

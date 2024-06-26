@@ -9,18 +9,20 @@ import (
 var jwtKey = []byte("your_secret_key")
 
 type Claims struct {
-	UserID    int `json:"user_id"`
-	CompanyID int `json:"company_id"`
-	BranchID  int `json:"branch_id"`
+	UserID    int    `json:"user_id"`
+	CompanyID int    `json:"company_id"`
+	BranchID  int    `json:"branch_id"`
+	Role      string `json:"role"`
 	jwt.StandardClaims
 }
 
-func GenerateJWT(userID, companyID, branchID int) (string, error) {
+func GenerateJWT(userID, companyID, branchID int, role string) (string, error) {
 	expirationTime := time.Now().Add(24 * time.Hour)
 	claims := &Claims{
 		UserID:    userID,
 		CompanyID: companyID,
 		BranchID:  branchID,
+		Role:      role,
 		StandardClaims: jwt.StandardClaims{
 			ExpiresAt: expirationTime.Unix(),
 		},

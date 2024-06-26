@@ -30,6 +30,7 @@ func (s *companyService) Register(register *domain.RegisterInput) (*domain.DataR
 		Username:  register.Username,
 		Password:  hashedPassword,
 		DataValue: register.DataValue,
+		Role:      "user",
 	}
 
 	res, err := s.companyRepository.Register(registerData)
@@ -47,9 +48,9 @@ func (s *companyService) Register(register *domain.RegisterInput) (*domain.DataR
 	}, nil
 }
 
-func (s *companyService) Login(login *domain.LoginInput) (*domain.DataReply, error) {
+func (s *companyService) Login(login *domain.LoginInput) (*domain.DataReply, string, error) {
 	if login.Username == "" || login.Password == "" || login.CompanyID == 0 || login.BranchID == 0 {
-		return nil, errors.New("username or password cannot be empty")
+		return nil, "", errors.New("username or password cannot be empty")
 	}
 
 	hashedPassword := hashPassword(login.Password)
@@ -62,11 +63,11 @@ func (s *companyService) Login(login *domain.LoginInput) (*domain.DataReply, err
 
 	res, err := s.companyRepository.Login(loginData)
 	if err != nil {
-		return nil, err
+		return nil, "", err
 	}
 
 	if !checkPassword(login.Password, res.Password) {
-		return nil, errors.New("invalid username or password")
+		return nil, "", errors.New("invalid username or password")
 	}
 
 	return &domain.DataReply{
@@ -76,7 +77,7 @@ func (s *companyService) Login(login *domain.LoginInput) (*domain.DataReply, err
 		Username:  res.Username,
 		DataValue: res.DataValue,
 		CreatedAt: res.CreatedAt,
-	}, nil
+	}, res.Role, nil
 }
 
 func (s *companyService) GetData(data *domain.DataInput) (*domain.DataReply, error) {
@@ -167,4 +168,57 @@ func (s *companyService) GetAllData() ([]domain.DataReply, error) {
 	}
 
 	return data, nil
+}
+
+func (s *companyService) GetMe(data *domain.Me) (*domain.DataReply, error) {
+	form := &domain.Data{
+		CompanyID: data.CompanyID,
+		BranchID:  data.BranchID,
+		UserID:    data.UserID,
+	}
+
+	res, err := s.companyRepository.GetMe(form)
+	if err != nil {
+		return nil, err
+	}
+
+	return &domain.DataReply{
+		CompanyID: res.CompanyID,
+		BranchID:  res.BranchID,
+		UserID:    res.UserID,
+		Username:  res.Username,
+		DataValue: res.DataValue,
+		CreatedAt: res.CreatedAt,
+	}, nil
+}
+
+func (s *companyService) Admin(data *domain.Admin) (*domain.DataReply, error) {
+	if data.Username == "" || data.Password == "" || data.CompanyID == 0 || data.BranchID == 0 {
+		return nil, errors.New("username or password cannot be empty")
+	}
+
+	hashedPassword := hashPassword(data.Password)
+	registerData := &domain.Data{
+		CompanyID: data.CompanyID,
+		BranchID:  data.BranchID,
+		Username:  data.Username,
+		Password:  hashedPassword,
+		DataValue: data.DataValue,
+		Role:      "admin",
+	}
+
+	res, err := s.companyRepository.Register(registerData)
+	if err != nil {
+		return nil, err
+	}
+
+	return &domain.DataReply{
+		CompanyID: res.CompanyID,
+		BranchID:  res.BranchID,
+		UserID:    res.UserID,
+		Username:  res.Username,
+		DataValue: res.DataValue,
+		CreatedAt: res.CreatedAt,
+	}, nil
+
 }
