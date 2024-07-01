@@ -22,7 +22,7 @@ func main() {
 	companyService := services.NewCompanyService(companyRepository)
 	CompanyHandler := handlers.NewCompanyHandler(companyService)
 
-	httpServer := server.NewCompanyServer(CompanyHandler)
+	httpServer := server.NewServer(CompanyHandler)
 
 	httpServer.Initialize()
 }
