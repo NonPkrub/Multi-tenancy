@@ -20,9 +20,13 @@ func main() {
 
 	companyRepository := repositories.NewCompanyRepository(db)
 	companyService := services.NewCompanyService(companyRepository)
-	CompanyHandler := handlers.NewCompanyHandler(companyService)
+	companyHandler := handlers.NewCompanyHandler(companyService)
 
-	httpServer := server.NewServer(CompanyHandler)
+	manageRepository := repositories.NewManageRepository(db)
+	manageService := services.NewManageService(manageRepository)
+	manageHandler := handlers.NewManageHandler(manageService)
+
+	httpServer := server.NewServer(companyHandler, manageHandler)
 
 	httpServer.Initialize()
 }

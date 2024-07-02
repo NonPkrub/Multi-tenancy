@@ -12,10 +12,11 @@ import (
 
 type Server struct {
 	company ports.CompanyHandler
+	manage  ports.ManageHandler
 }
 
-func NewServer(company ports.CompanyHandler) *Server {
-	return &Server{company: company}
+func NewServer(company ports.CompanyHandler, manage ports.ManageHandler) *Server {
+	return &Server{company: company, manage: manage}
 }
 
 func (s *Server) Initialize() {
@@ -40,6 +41,17 @@ func (s *Server) Initialize() {
 		company.Put("/data", s.company.UpdateData)
 		company.Delete("/data", s.company.DeleteData)
 	}
+
+	manage := v1.Group("manage")
+	{
+		manage.Get("/company", s.manage.GetCompany)
+		manage.Get("/branch", s.manage.GetBranch)
+		manage.Post("/company", s.manage.CreateCompany)
+		manage.Post("/branch", s.manage.CreateBranch)
+		manage.Delete("/company/:company", s.manage.DeleteCompany)
+		manage.Delete("/company/:company/branch/:branch", s.manage.DeleteBranch)
+	}
+
 	app.Listen(fmt.Sprintf(":%v", viper.GetInt("app.port")))
 
 }
