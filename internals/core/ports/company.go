@@ -26,6 +26,7 @@ type CompanyRepository interface {
 	GetAllData() ([]domain.Data, error)
 	DeleteData(data *domain.Data) error
 	GetMe(data *domain.Data) (*domain.Data, error)
+	GetOne(data *domain.Data) (*domain.Data, error)
 }
 
 type CompanyHandler interface {

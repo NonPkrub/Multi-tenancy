@@ -28,7 +28,13 @@ func (m *ManageHandler) GetCompany(c *fiber.Ctx) error {
 }
 
 func (m *ManageHandler) GetBranch(c *fiber.Ctx) error {
-	res, err := m.manageService.GetBranch()
+	company := c.Params("company")
+
+	req := &domain.CompanyRequest{
+		Company: company,
+	}
+
+	res, err := m.manageService.GetBranch(req)
 	if err != nil {
 		return c.Status(fiber.StatusInternalServerError).JSON(&fiber.Map{
 			"error": err.Error(),
@@ -55,7 +61,7 @@ func (m *ManageHandler) CreateCompany(c *fiber.Ctx) error {
 	}
 
 	return c.Status(fiber.StatusOK).JSON(&fiber.Map{
-		"data": res.Company + "successfully created",
+		"data": res.Company + " successfully created",
 	})
 }
 
@@ -75,7 +81,7 @@ func (m *ManageHandler) CreateBranch(c *fiber.Ctx) error {
 	}
 
 	return c.Status(fiber.StatusOK).JSON(&fiber.Map{
-		"data": *res.Branch + "in" + res.Company + "successfully created",
+		"data": *res.Branch + " in " + res.Company + " successfully created",
 	})
 }
 

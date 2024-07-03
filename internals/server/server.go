@@ -45,7 +45,7 @@ func (s *Server) Initialize() {
 	manage := v1.Group("manage")
 	{
 		manage.Get("/company", s.manage.GetCompany)
-		manage.Get("/branch", s.manage.GetBranch)
+		manage.Get("/branch/:company", s.manage.GetBranch)
 		manage.Post("/company", s.manage.CreateCompany)
 		manage.Post("/branch", s.manage.CreateBranch)
 		manage.Delete("/company/:company", s.manage.DeleteCompany)

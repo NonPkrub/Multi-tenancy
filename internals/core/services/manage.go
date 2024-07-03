@@ -4,6 +4,7 @@ import (
 	"errors"
 	"go-multi-tenancy/internals/core/domain"
 	"go-multi-tenancy/internals/core/ports"
+	"strings"
 )
 
 type manageService struct {
@@ -19,7 +20,7 @@ func NewManageService(manageRepository ports.ManageRepository) *manageService {
 func (m *manageService) GetCompany() ([]domain.Response, error) {
 	company, err := m.manageRepository.GetCompany()
 	if err != nil {
-		return nil, err
+		return nil, errors.New("Company not found")
 	}
 
 	companyData := []domain.Response{}
@@ -37,8 +38,12 @@ func (m *manageService) GetCompany() ([]domain.Response, error) {
 	return companyData, nil
 }
 
-func (m *manageService) GetBranch() ([]domain.Response, error) {
-	branch, err := m.manageRepository.GetBranch()
+func (m *manageService) GetBranch(data *domain.CompanyRequest) ([]domain.Response, error) {
+	req := &domain.Manage{
+		Company: strings.ToLower(data.Company),
+	}
+
+	branch, err := m.manageRepository.GetBranch(req)
 	if err != nil {
 		return nil, err
 	}
@@ -61,8 +66,9 @@ func (m *manageService) GetBranch() ([]domain.Response, error) {
 
 func (m *manageService) CreateCompany(data *domain.CompanyRequest) (*domain.Response, error) {
 	req := &domain.Manage{
-		Company: data.Company,
+		Company: strings.ToLower(data.Company),
 	}
+
 	company, err := m.manageRepository.CreateCompany(req)
 	if err != nil {
 		return nil, err
@@ -78,8 +84,8 @@ func (m *manageService) CreateCompany(data *domain.CompanyRequest) (*domain.Resp
 
 func (m *manageService) CreateBranch(data *domain.BranchRequest) (*domain.Response, error) {
 	req := &domain.Manage{
-		Company: data.Company,
-		Branch:  data.Branch,
+		Company: strings.ToLower(data.Company),
+		Branch:  strings.ToLower(data.Branch),
 	}
 
 	branch, err := m.manageRepository.CreateBranch(req)
@@ -97,7 +103,7 @@ func (m *manageService) CreateBranch(data *domain.BranchRequest) (*domain.Respon
 
 func (m *manageService) DeleteCompany(data *domain.CompanyRequest) error {
 	req := &domain.Manage{
-		Company: data.Company,
+		Company: strings.ToLower(data.Company),
 	}
 
 	err := m.manageRepository.DeleteCompany(req)
@@ -110,8 +116,8 @@ func (m *manageService) DeleteCompany(data *domain.CompanyRequest) error {
 
 func (m *manageService) DeleteBranch(data *domain.BranchRequest) error {
 	req := &domain.Manage{
-		Company: data.Company,
-		Branch:  data.Branch,
+		Company: strings.ToLower(data.Company),
+		Branch:  strings.ToLower(data.Branch),
 	}
 
 	err := m.manageRepository.DeleteBranch(req)

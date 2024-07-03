@@ -17,9 +17,9 @@ func NewManageRepository(db *sqlx.DB) *manageRepository {
 }
 
 func (m *manageRepository) GetCompany() ([]domain.Manage, error) {
-	query := `SELECT inhrelid::regclass AS partition_name, inhparent::regclass AS parent_table
+	query := `SELECT inhrelid::regclass AS company
 		FROM pg_inherits
-		WHERE inhparent = 'onesystem'::regclass;`
+		WHERE inhparent = 'company.onesystem'::regclass;`
 
 	var companies []domain.Manage
 	err := m.db.Select(&companies, query)
@@ -30,14 +30,14 @@ func (m *manageRepository) GetCompany() ([]domain.Manage, error) {
 	return companies, nil
 }
 
-func (m *manageRepository) GetBranch() ([]domain.Manage, error) {
+func (m *manageRepository) GetBranch(data *domain.Manage) ([]domain.Manage, error) {
 
-	query := `SELECT inhrelid::regclass AS partition_name, inhparent::regclass AS parent_table
+	query := `SELECT inhrelid::regclass AS branch, inhparent::regclass AS company
 		FROM pg_inherits
 		WHERE inhparent = ($1)::regclass;`
 
 	var branch []domain.Manage
-	err := m.db.Get(&branch, query, "company")
+	err := m.db.Get(&branch, query, data.Company)
 	if err != nil {
 		return nil, err
 	}
@@ -52,8 +52,8 @@ func (m *manageRepository) CreateCompany(data *domain.Manage) (*domain.Manage, e
 		return nil, err
 	}
 
-	if !exists {
-		return nil, errors.New("partitioned table does not exist")
+	if exists {
+		return nil, errors.New("the company already exist")
 	}
 
 	query := fmt.Sprintf(`CREATE TABLE company.%s PARTITION OF company.onesystem
@@ -75,7 +75,7 @@ func (m *manageRepository) CreateBranch(data *domain.Manage) (*domain.Manage, er
 	}
 
 	if !exists {
-		return nil, errors.New("partitioned table does not exist")
+		return nil, errors.New("the company does not exist")
 	}
 
 	query := fmt.Sprintf(`CREATE TABLE company.%s PARTITION OF company.%s
@@ -90,6 +90,7 @@ func (m *manageRepository) CreateBranch(data *domain.Manage) (*domain.Manage, er
 }
 
 func (m *manageRepository) DeleteCompany(data *domain.Manage) error {
+
 	exists, err := m.tableExists(data.Company)
 	if err != nil {
 		return err

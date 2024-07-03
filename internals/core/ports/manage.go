@@ -8,7 +8,7 @@ import (
 
 type ManageRepository interface {
 	GetCompany() ([]domain.Manage, error)
-	GetBranch() ([]domain.Manage, error)
+	GetBranch(data *domain.Manage) ([]domain.Manage, error)
 	CreateCompany(data *domain.Manage) (*domain.Manage, error)
 	CreateBranch(data *domain.Manage) (*domain.Manage, error)
 	DeleteCompany(data *domain.Manage) error
@@ -17,7 +17,7 @@ type ManageRepository interface {
 
 type ManageService interface {
 	GetCompany() ([]domain.Response, error)
-	GetBranch() ([]domain.Response, error)
+	GetBranch(data *domain.CompanyRequest) ([]domain.Response, error)
 	CreateCompany(data *domain.CompanyRequest) (*domain.Response, error)
 	CreateBranch(data *domain.BranchRequest) (*domain.Response, error)
 	DeleteCompany(data *domain.CompanyRequest) error

@@ -47,7 +47,7 @@ func (h *CompanyHandler) Login(c *fiber.Ctx) error {
 	}
 
 	// Generate JWT
-	token, err := utils.GenerateJWT(res.UserID, res.CompanyID, res.BranchID, role)
+	token, err := utils.GenerateJWT(res.Username, res.Company, res.Branch, role)
 	if err != nil {
 		return err
 	}
@@ -56,16 +56,16 @@ func (h *CompanyHandler) Login(c *fiber.Ctx) error {
 }
 
 func (h *CompanyHandler) GetData(c *fiber.Ctx) error {
-	companyID := c.Locals("company_id")
-	branchID := c.Locals("branch_id")
+	company := c.Locals("company")
+	branch := c.Locals("branch")
 
-	if companyID == nil || branchID == nil {
+	if company == nil || branch == nil {
 		return c.Status(fiber.StatusUnauthorized).JSON(fiber.Map{"error": "Invalid token"})
 	}
 
 	req := &domain.DataInput{
-		CompanyID: companyID.(int),
-		BranchID:  branchID.(int),
+		Company: company.(string),
+		Branch:  branch.(string),
 	}
 
 	res, err := h.companyService.GetData(req)
@@ -77,11 +77,11 @@ func (h *CompanyHandler) GetData(c *fiber.Ctx) error {
 }
 
 func (h *CompanyHandler) UpdateData(c *fiber.Ctx) error {
-	companyID := c.Locals("company_id")
-	branchID := c.Locals("branch_id")
-	userID := c.Locals("user_id")
+	company := c.Locals("company")
+	branch := c.Locals("branch")
+	username := c.Locals("username")
 
-	if companyID == nil || branchID == nil || userID == nil {
+	if company == nil || branch == nil || username == nil {
 		return c.Status(fiber.StatusUnauthorized).JSON(fiber.Map{"error": "Invalid token"})
 	}
 
@@ -91,10 +91,9 @@ func (h *CompanyHandler) UpdateData(c *fiber.Ctx) error {
 	}
 
 	req := &domain.DataUpdate{
-		CompanyID: companyID.(int),
-		BranchID:  branchID.(int),
-		UserID:    userID.(int),
-		DataValue: dataValue.DataValue,
+		Company:  company.(string),
+		Branch:   branch.(string),
+		Username: username.(string),
 	}
 
 	res, err := h.companyService.UpdateData(req)
@@ -115,18 +114,18 @@ func (h *CompanyHandler) GetAllData(c *fiber.Ctx) error {
 }
 
 func (h *CompanyHandler) DeleteData(c *fiber.Ctx) error {
-	companyID := c.Locals("company_id")
-	branchID := c.Locals("branch_id")
-	userID := c.Locals("user_id")
+	company := c.Locals("company_id")
+	branch := c.Locals("branch_id")
+	username := c.Locals("user_id")
 
-	if companyID == nil || branchID == nil || userID == nil {
+	if company == nil || branch == nil || username == nil {
 		return c.Status(fiber.StatusUnauthorized).JSON(fiber.Map{"error": "Invalid token"})
 	}
 
 	req := &domain.DataDelete{
-		CompanyID: companyID.(int),
-		BranchID:  branchID.(int),
-		UserID:    userID.(int),
+		Company:  company.(string),
+		Branch:   branch.(string),
+		Username: username.(string),
 	}
 
 	err := h.companyService.DeleteData(req)
@@ -138,18 +137,18 @@ func (h *CompanyHandler) DeleteData(c *fiber.Ctx) error {
 }
 
 func (h *CompanyHandler) GetMe(c *fiber.Ctx) error {
-	companyID := c.Locals("company_id")
-	branchID := c.Locals("branch_id")
-	userID := c.Locals("user_id")
+	company := c.Locals("company_id")
+	branch := c.Locals("branch_id")
+	username := c.Locals("user_id")
 
-	if companyID == nil || branchID == nil || userID == nil {
+	if company == nil || branch == nil || username == nil {
 		return c.Status(fiber.StatusUnauthorized).JSON(fiber.Map{"error": "Invalid token"})
 	}
 
 	req := &domain.Me{
-		CompanyID: companyID.(int),
-		BranchID:  branchID.(int),
-		UserID:    userID.(int),
+		Company:  company.(string),
+		Branch:   branch.(string),
+		Username: username.(string),
 	}
 
 	res, err := h.companyService.GetMe(req)

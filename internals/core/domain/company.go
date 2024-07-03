@@ -5,25 +5,29 @@ import (
 )
 
 type Data struct {
-	CompanyID int       `json:"company_id"`
-	BranchID  int       `json:"branch_id"`
-	UserID    int       `json:"user_id"`
-	DataValue string    `json:"data_value"`
-	CreatedAt time.Time `json:"created_at"`
+	Company   string    `json:"company"`
+	Branch    string    `json:"branch"`
+	FirstName string    `json:"first_name"`
+	LastName  string    `json:"last_name"`
 	Username  string    `json:"username"`
 	Password  string    `json:"password"`
+	CreateAt  time.Time `json:"create_at"`
+	UpdateAt  time.Time `json:"update_at"`
+	DeleteAt  time.Time `json:"delete_at"`
 	Role      string    `json:"role"`
 }
 
-func NewData(company_id int, branch_id int, user_id int, data_value string, created_at time.Time, username string, password string, role string) *Data {
+func NewData(company string, branch string, first_name string, last_name string, username string, password string, create_at time.Time, update_at time.Time, delete_at time.Time, role string) *Data {
 	return &Data{
-		CompanyID: company_id,
-		BranchID:  branch_id,
-		UserID:    user_id,
-		DataValue: data_value,
-		CreatedAt: created_at,
+		Company:   company,
+		Branch:    branch,
+		FirstName: first_name,
+		LastName:  last_name,
 		Username:  username,
 		Password:  password,
+		CreateAt:  create_at,
+		UpdateAt:  update_at,
+		DeleteAt:  delete_at,
 		Role:      role,
 	}
 }
@@ -31,56 +35,59 @@ func NewData(company_id int, branch_id int, user_id int, data_value string, crea
 type RegisterInput struct {
 	Username  string `json:"username"`
 	Password  string `json:"password"`
-	CompanyID int    `json:"company_id"`
-	BranchID  int    `json:"branch_id"`
-	DataValue string `json:"data_value"`
+	Company   string `json:"company"`
+	Branch    string `json:"branch"`
+	FirstName string `json:"first_name"`
+	LastName  string `json:"last_name"`
 }
 
 type LoginInput struct {
-	Username  string `json:"username"`
-	Password  string `json:"password"`
-	CompanyID int    `json:"company_id"`
-	BranchID  int    `json:"branch_id"`
+	Username string `json:"username"`
+	Password string `json:"password"`
+	Company  string `json:"company"`
+	Branch   string `json:"branch"`
 }
 
 type DataReply struct {
 	Username  string    `json:"username"`
-	UserID    int       `json:"user_id"`
-	DataValue string    `json:"data_value"`
+	Company   string    `json:"company"`
+	Branch    string    `json:"branch"`
+	FirstName string    `json:"first_name"`
+	LastName  string    `json:"last_name"`
 	CreatedAt time.Time `json:"created_at"`
-	CompanyID int       `json:"company_id"`
-	BranchID  int       `json:"branch_id"`
 }
 
 type DataInput struct {
-	CompanyID int `json:"company_id"`
-	BranchID  int `json:"branch_id"`
+	Company string `json:"company"`
+	Branch  string `json:"branch"`
 }
 
 type DataUpdate struct {
-	CompanyID int    `json:"company_id"`
-	BranchID  int    `json:"branch_id"`
-	UserID    int    `json:"user_id"`
-	DataValue string `json:"data_value"`
+	Company   string  `json:"company"`
+	Branch    string  `json:"branch"`
+	Username  string  `json:"username"`
+	FirstName *string `json:"first_name"`
+	LastName  *string `json:"last_name"`
+	Password  *string `json:"password"`
 }
 
 type DataDelete struct {
-	CompanyID int `json:"company_id"`
-	BranchID  int `json:"branch_id"`
-	UserID    int `json:"user_id"`
+	Company  string `json:"company"`
+	Branch   string `json:"branch"`
+	Username string `json:"username"`
 }
 
 type Admin struct {
-	CompanyID int    `json:"company_id"`
-	BranchID  int    `json:"branch_id"`
-	UserID    int    `json:"user_id"`
-	DataValue string `json:"data_value"`
+	Company   string `json:"company"`
+	Branch    string `json:"branch"`
 	Username  string `json:"username"`
+	FirstName string `json:"first_name"`
+	LastName  string `json:"last_name"`
 	Password  string `json:"password"`
 }
 
 type Me struct {
-	CompanyID int `json:"company_id"`
-	BranchID  int `json:"branch_id"`
-	UserID    int `json:"user_id"`
+	Company  string `json:"company"`
+	Branch   string `json:"branch"`
+	Username string `json:"username"`
 }

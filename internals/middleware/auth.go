@@ -42,9 +42,9 @@ func JWTAuth() fiber.Handler {
 		}
 
 		// Store user information in the locals of the context
-		c.Locals("user_id", claims.UserID)
-		c.Locals("company_id", claims.CompanyID)
-		c.Locals("branch_id", claims.BranchID)
+		c.Locals("username", claims.Username)
+		c.Locals("company", claims.Company)
+		c.Locals("branch", claims.Branch)
 		c.Locals("role", claims.Role)
 
 		// Continue to the next handler in the chain

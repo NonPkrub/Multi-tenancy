@@ -19,17 +19,18 @@ func NewCompanyService(companyRepository ports.CompanyRepository) *companyServic
 }
 
 func (s *companyService) Register(register *domain.RegisterInput) (*domain.DataReply, error) {
-	if register.Username == "" || register.Password == "" || register.CompanyID == 0 || register.BranchID == 0 {
+	if register.Username == "" || register.Password == "" || register.Company == "" || register.Branch == "" {
 		return nil, errors.New("username or password cannot be empty")
 	}
 
 	hashedPassword := hashPassword(register.Password)
 	registerData := &domain.Data{
-		CompanyID: register.CompanyID,
-		BranchID:  register.BranchID,
+		Company:   register.Company,
+		Branch:    register.Branch,
 		Username:  register.Username,
 		Password:  hashedPassword,
-		DataValue: register.DataValue,
+		FirstName: register.FirstName,
+		LastName:  register.LastName,
 		Role:      "user",
 	}
 
@@ -39,26 +40,26 @@ func (s *companyService) Register(register *domain.RegisterInput) (*domain.DataR
 	}
 
 	return &domain.DataReply{
-		CompanyID: res.CompanyID,
-		BranchID:  res.BranchID,
-		UserID:    res.UserID,
+		Company:   res.Company,
+		Branch:    res.Branch,
 		Username:  res.Username,
-		DataValue: res.DataValue,
-		CreatedAt: res.CreatedAt,
+		FirstName: res.FirstName,
+		LastName:  res.LastName,
+		CreatedAt: res.CreateAt,
 	}, nil
 }
 
 func (s *companyService) Login(login *domain.LoginInput) (*domain.DataReply, string, error) {
-	if login.Username == "" || login.Password == "" || login.CompanyID == 0 || login.BranchID == 0 {
+	if login.Username == "" || login.Password == "" || login.Company == "" || login.Branch == "" {
 		return nil, "", errors.New("username or password cannot be empty")
 	}
 
 	hashedPassword := hashPassword(login.Password)
 	loginData := &domain.Data{
-		Username:  login.Username,
-		Password:  hashedPassword,
-		CompanyID: login.CompanyID,
-		BranchID:  login.BranchID,
+		Username: login.Username,
+		Password: hashedPassword,
+		Company:  login.Company,
+		Branch:   login.Branch,
 	}
 
 	res, err := s.companyRepository.Login(loginData)
@@ -71,19 +72,19 @@ func (s *companyService) Login(login *domain.LoginInput) (*domain.DataReply, str
 	}
 
 	return &domain.DataReply{
-		CompanyID: res.CompanyID,
-		BranchID:  res.BranchID,
-		UserID:    res.UserID,
+		Company:   res.Company,
+		Branch:    res.Branch,
 		Username:  res.Username,
-		DataValue: res.DataValue,
-		CreatedAt: res.CreatedAt,
+		FirstName: res.FirstName,
+		LastName:  res.LastName,
+		CreatedAt: res.CreateAt,
 	}, res.Role, nil
 }
 
 func (s *companyService) GetData(data *domain.DataInput) (*domain.DataReply, error) {
 	req := &domain.Data{
-		CompanyID: data.CompanyID,
-		BranchID:  data.BranchID,
+		Company: data.Company,
+		Branch:  data.Branch,
 	}
 
 	res, err := s.companyRepository.GetData(req)
@@ -92,21 +93,23 @@ func (s *companyService) GetData(data *domain.DataInput) (*domain.DataReply, err
 	}
 
 	return &domain.DataReply{
-		CompanyID: res.CompanyID,
-		BranchID:  res.BranchID,
-		UserID:    res.UserID,
+		Company:   res.Company,
+		Branch:    res.Branch,
 		Username:  res.Username,
-		DataValue: res.DataValue,
-		CreatedAt: res.CreatedAt,
+		FirstName: res.FirstName,
+		LastName:  res.LastName,
+		CreatedAt: res.CreateAt,
 	}, nil
 }
 
 func (s *companyService) UpdateData(data *domain.DataUpdate) (*domain.DataReply, error) {
 	req := &domain.Data{
-		CompanyID: data.CompanyID,
-		BranchID:  data.BranchID,
-		UserID:    data.UserID,
-		DataValue: data.DataValue,
+		Company:   data.Company,
+		Branch:    data.Branch,
+		Username:  data.Username,
+		FirstName: *data.FirstName,
+		LastName:  *data.LastName,
+		Password:  *data.Password,
 	}
 
 	res, err := s.companyRepository.UpdateData(req)
@@ -115,12 +118,12 @@ func (s *companyService) UpdateData(data *domain.DataUpdate) (*domain.DataReply,
 	}
 
 	return &domain.DataReply{
-		CompanyID: res.CompanyID,
-		BranchID:  res.BranchID,
-		UserID:    res.UserID,
+		Company:   res.Company,
+		Branch:    res.Branch,
 		Username:  res.Username,
-		DataValue: res.DataValue,
-		CreatedAt: res.CreatedAt,
+		FirstName: res.FirstName,
+		LastName:  res.LastName,
+		CreatedAt: res.CreateAt,
 	}, nil
 }
 
@@ -136,9 +139,9 @@ func checkPassword(password, hash string) bool {
 
 func (s *companyService) DeleteData(data *domain.DataDelete) error {
 	req := &domain.Data{
-		CompanyID: data.CompanyID,
-		BranchID:  data.BranchID,
-		UserID:    data.UserID,
+		Company:  data.Company,
+		Branch:   data.Branch,
+		Username: data.Username,
 	}
 
 	err := s.companyRepository.DeleteData(req)
@@ -158,12 +161,12 @@ func (s *companyService) GetAllData() ([]domain.DataReply, error) {
 	data := []domain.DataReply{}
 	for _, info := range res {
 		data = append(data, domain.DataReply{
-			CompanyID: info.CompanyID,
-			BranchID:  info.BranchID,
-			UserID:    info.UserID,
+			Company:   info.Company,
+			Branch:    info.Branch,
 			Username:  info.Username,
-			DataValue: info.DataValue,
-			CreatedAt: info.CreatedAt,
+			FirstName: info.FirstName,
+			LastName:  info.LastName,
+			CreatedAt: info.CreateAt,
 		})
 	}
 
@@ -172,9 +175,9 @@ func (s *companyService) GetAllData() ([]domain.DataReply, error) {
 
 func (s *companyService) GetMe(data *domain.Me) (*domain.DataReply, error) {
 	form := &domain.Data{
-		CompanyID: data.CompanyID,
-		BranchID:  data.BranchID,
-		UserID:    data.UserID,
+		Company:  data.Company,
+		Branch:   data.Branch,
+		Username: data.Username,
 	}
 
 	res, err := s.companyRepository.GetMe(form)
@@ -183,27 +186,28 @@ func (s *companyService) GetMe(data *domain.Me) (*domain.DataReply, error) {
 	}
 
 	return &domain.DataReply{
-		CompanyID: res.CompanyID,
-		BranchID:  res.BranchID,
-		UserID:    res.UserID,
+		Company:   res.Company,
+		Branch:    res.Branch,
 		Username:  res.Username,
-		DataValue: res.DataValue,
-		CreatedAt: res.CreatedAt,
+		FirstName: res.FirstName,
+		LastName:  res.LastName,
+		CreatedAt: res.CreateAt,
 	}, nil
 }
 
 func (s *companyService) Admin(data *domain.Admin) (*domain.DataReply, error) {
-	if data.Username == "" || data.Password == "" || data.CompanyID == 0 || data.BranchID == 0 {
+	if data.Username == "" || data.Password == "" || data.Company == "" || data.Branch == "" {
 		return nil, errors.New("username or password cannot be empty")
 	}
 
 	hashedPassword := hashPassword(data.Password)
 	registerData := &domain.Data{
-		CompanyID: data.CompanyID,
-		BranchID:  data.BranchID,
+		Company:   data.Company,
+		Branch:    data.Branch,
 		Username:  data.Username,
 		Password:  hashedPassword,
-		DataValue: data.DataValue,
+		FirstName: data.FirstName,
+		LastName:  data.LastName,
 		Role:      "admin",
 	}
 
@@ -213,12 +217,12 @@ func (s *companyService) Admin(data *domain.Admin) (*domain.DataReply, error) {
 	}
 
 	return &domain.DataReply{
-		CompanyID: res.CompanyID,
-		BranchID:  res.BranchID,
-		UserID:    res.UserID,
+		Company:   res.Company,
+		Branch:    res.Branch,
 		Username:  res.Username,
-		DataValue: res.DataValue,
-		CreatedAt: res.CreatedAt,
+		FirstName: res.FirstName,
+		LastName:  res.LastName,
+		CreatedAt: res.CreateAt,
 	}, nil
 
 }
