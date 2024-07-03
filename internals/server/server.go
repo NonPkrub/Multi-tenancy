@@ -48,6 +48,10 @@ func (s *Server) Initialize() {
 		manage.Get("/branch/:company", s.manage.GetBranch)
 		manage.Post("/company", s.manage.CreateCompany)
 		manage.Post("/branch", s.manage.CreateBranch)
+		//manage.Put("/company/:company", s.manage.UpdateCompany)
+		//manage.Put("/company/:company/branch/:branch", s.manage.UpdateBranch)
+		//manage.Put("/company/:company/branch/:branch", s.manage.DeleteBranch)
+		//manage.Put("/branch/:company/:branch", s.manage.DeleteBranch)
 		manage.Delete("/company/:company", s.manage.DeleteCompany)
 		manage.Delete("/company/:company/branch/:branch", s.manage.DeleteBranch)
 	}

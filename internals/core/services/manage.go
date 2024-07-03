@@ -43,7 +43,7 @@ func (m *manageService) GetBranch(data *domain.CompanyRequest) ([]domain.Respons
 	}
 
 	req := &domain.GetBranch{
-		Company: strings.ToLower("company." + data.Company),
+		Company: strings.ToLower(data.Company),
 	}
 
 	branch, err := m.manageRepository.GetBranch(req)

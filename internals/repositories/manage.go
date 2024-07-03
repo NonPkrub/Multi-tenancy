@@ -36,7 +36,7 @@ func (m *manageRepository) GetBranch(data *domain.GetBranch) ([]domain.GetBranch
 		FROM pg_inherits
 		WHERE inhparent = $1::regclass;`
 
-	rows, err := m.db.Query(query, data.Company)
+	rows, err := m.db.Query(query, "company."+data.Company)
 	if err != nil {
 		return nil, err
 	}
@@ -118,10 +118,10 @@ func (m *manageRepository) DeleteCompany(data *domain.Manage) error {
 	}
 
 	if !exists {
-		return errors.New("partitioned table does not exist")
+		return errors.New("the company does not exist")
 	}
 
-	query := "DROP TABLE " + data.Company
+	query := "DROP TABLE company." + data.Company
 	_, err = m.db.Exec(query)
 	if err != nil {
 		return err
@@ -137,10 +137,10 @@ func (m *manageRepository) DeleteBranch(data *domain.Manage) error {
 	}
 
 	if !exists {
-		return errors.New("partitioned table does not exist")
+		return errors.New("the company does not exist")
 	}
 
-	query := "DROP TABLE " + data.Branch
+	query := "DROP TABLE company." + data.Branch
 	_, err = m.db.Exec(query)
 	if err != nil {
 		return err
