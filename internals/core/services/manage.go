@@ -17,30 +17,33 @@ func NewManageService(manageRepository ports.ManageRepository) *manageService {
 	}
 }
 
-func (m *manageService) GetCompany() ([]domain.Response, error) {
+func (m *manageService) GetCompany() ([]domain.ResponseCompany, error) {
 	company, err := m.manageRepository.GetCompany()
 	if err != nil {
 		return nil, errors.New("Company not found")
 	}
 
-	companyData := []domain.Response{}
+	companyData := []domain.ResponseCompany{}
 	for _, res := range company {
 		if len(res.Company) == 0 {
 			return nil, errors.New("Company not found")
 		}
 
-		companyData = append(companyData, domain.Response{
-			Company: res.Company,
-			Branch:  &res.Branch,
+		companyData = append(companyData, domain.ResponseCompany{
+			Company: extractLastPart(res.Company),
 		})
 	}
 
 	return companyData, nil
 }
 
-func (m *manageService) GetBranch(data *domain.CompanyRequest) ([]domain.Response, error) {
-	req := &domain.Manage{
-		Company: strings.ToLower(data.Company),
+func (m *manageService) GetBranch(data *domain.CompanyRequest) ([]domain.ResponseBranch, error) {
+	if data == nil || data.Company == "" {
+		return nil, errors.New("Company name is required")
+	}
+
+	req := &domain.GetBranch{
+		Company: strings.ToLower("company." + data.Company),
 	}
 
 	branch, err := m.manageRepository.GetBranch(req)
@@ -48,15 +51,15 @@ func (m *manageService) GetBranch(data *domain.CompanyRequest) ([]domain.Respons
 		return nil, err
 	}
 
-	branchData := []domain.Response{}
+	branchData := []domain.ResponseBranch{}
 	for _, res := range branch {
 		if len(res.Company) == 0 && len(res.Branch) == 0 {
 			return nil, errors.New("Branch not found")
 		}
 
-		branchData = append(branchData, domain.Response{
-			Company: res.Company,
-			Branch:  &res.Branch,
+		branchData = append(branchData, domain.ResponseBranch{
+			Company: extractLastPart(res.Company),
+			Branch:  extractLastPartFromSlice(res.Branch),
 		})
 	}
 
@@ -126,4 +129,39 @@ func (m *manageService) DeleteBranch(data *domain.BranchRequest) error {
 	}
 
 	return nil
+}
+
+func extractLastPart(s string) string {
+	parts := strings.Split(s, ".")
+	if len(parts) > 1 {
+		return parts[1]
+	}
+	return ""
+}
+
+func extractLastPartFromSlice(slice []*string) []domain.BranchObject {
+	var result []domain.BranchObject
+	for _, str := range slice {
+		if str != nil {
+			extracted := extractLastPart(*str)
+			result = append(result, domain.BranchObject{Name: extracted})
+		}
+	}
+	return result
+}
+
+func (m *manageService) UpdateCompanyToBranch(data *domain.BranchRequest) (*domain.Response, error) {
+	return nil, nil
+}
+
+func (m *manageService) UpdateBranchToCompany(data *domain.BranchRequest) (*domain.Response, error) {
+	return nil, nil
+}
+
+func (m *manageService) UpdateCompanyName(data *domain.BranchRequest) (*domain.Response, error) {
+	return nil, nil
+}
+
+func (m *manageService) UpdateBranchName(data *domain.BranchRequest) (*domain.Response, error) {
+	return nil, nil
 }

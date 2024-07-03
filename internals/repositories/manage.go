@@ -30,19 +30,40 @@ func (m *manageRepository) GetCompany() ([]domain.Manage, error) {
 	return companies, nil
 }
 
-func (m *manageRepository) GetBranch(data *domain.Manage) ([]domain.Manage, error) {
+func (m *manageRepository) GetBranch(data *domain.GetBranch) ([]domain.GetBranch, error) {
 
-	query := `SELECT inhrelid::regclass AS branch, inhparent::regclass AS company
+	query := `SELECT  inhparent::regclass AS company,inhrelid::regclass AS branch
 		FROM pg_inherits
-		WHERE inhparent = ($1)::regclass;`
+		WHERE inhparent = $1::regclass;`
 
-	var branch []domain.Manage
-	err := m.db.Get(&branch, query, data.Company)
+	rows, err := m.db.Query(query, data.Company)
 	if err != nil {
 		return nil, err
 	}
+	defer rows.Close()
 
-	return branch, nil
+	branchMap := make(map[string][]*string)
+	for rows.Next() {
+		var branch, company string
+		if err := rows.Scan(&branch, &company); err != nil {
+			return nil, err
+		}
+		branchMap[branch] = append(branchMap[branch], &company)
+	}
+
+	var branches []domain.GetBranch
+	for company, branch := range branchMap {
+		branches = append(branches, domain.GetBranch{
+			Company: company,
+			Branch:  branch,
+		})
+	}
+
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+
+	return branches, nil
 
 }
 
@@ -141,4 +162,20 @@ func (m *manageRepository) tableExists(tableName string) (bool, error) {
 		return false, err
 	}
 	return exists, nil
+}
+
+func (m *manageRepository) UpdateCompanyToBranch(data *domain.Manage) (*domain.Manage, error) {
+	return nil, nil
+}
+
+func (m *manageRepository) UpdateBranchToCompany(data *domain.Manage) (*domain.Manage, error) {
+	return nil, nil
+}
+
+func (m *manageRepository) UpdateCompanyName(data *domain.Manage) (*domain.Manage, error) {
+	return nil, nil
+}
+
+func (m *manageRepository) UpdateBranchName(data *domain.Manage) (*domain.Manage, error) {
+	return nil, nil
 }

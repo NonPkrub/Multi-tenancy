@@ -124,3 +124,19 @@ func (m *ManageHandler) DeleteBranch(c *fiber.Ctx) error {
 		"data": "Branch successfully deleted",
 	})
 }
+
+func (m *ManageHandler) UpdateCompanyToBranch(c *fiber.Ctx) error {
+	return nil
+}
+
+func (m *ManageHandler) UpdateBranchToCompany(c *fiber.Ctx) error {
+	return nil
+}
+
+func (m *ManageHandler) UpdateCompanyName(c *fiber.Ctx) error {
+	return nil
+}
+
+func (m *ManageHandler) UpdateBranchName(c *fiber.Ctx) error {
+	return nil
+}

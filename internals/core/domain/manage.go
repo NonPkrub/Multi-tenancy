@@ -30,6 +30,11 @@ func NewManage(company string, branch string, first_name string, last_name strin
 	}
 }
 
+type GetBranch struct {
+	Company string    `json:"company"`
+	Branch  []*string `json:"branch"`
+}
+
 type CompanyRequest struct {
 	Company string `json:"company"`
 }
@@ -42,4 +47,17 @@ type BranchRequest struct {
 type Response struct {
 	Company string  `json:"company"`
 	Branch  *string `json:"branch"`
+}
+
+type ResponseCompany struct {
+	Company string `json:"company"`
+}
+
+type ResponseBranch struct {
+	Company string         `json:"company"`
+	Branch  []BranchObject `json:"branch"`
+}
+
+type BranchObject struct {
+	Name string `json:"name"`
 }

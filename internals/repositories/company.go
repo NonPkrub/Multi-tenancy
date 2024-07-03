@@ -44,12 +44,6 @@ func (r *companyRepository) GetData(data *domain.Data) (*domain.Data, error) {
 }
 
 func (r *companyRepository) UpdateData(data *domain.Data) (*domain.Data, error) {
-	// query := "UPDATE company.onesystem SET data_value = $1 WHERE company_id = $2 AND branch = $3 AND username = $4 returning data_value, company_id, branch_id, user_id, username, created_at"
-	// err := r.db.QueryRow(query, data.DataValue, data.Company, data.Branch, data.Username).Scan(&data.DataValue, &data.CompanyID, &data.BranchID, &data.UserID, &data.Username, &data.CreatedAt)
-	// if err != nil {
-	// 	return nil, err
-	// }
-	// return data, nil
 
 	var fields []string
 	var args []interface{}
