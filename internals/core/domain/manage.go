@@ -30,6 +30,25 @@ func NewManage(company string, branch string, first_name string, last_name strin
 	}
 }
 
+type CompanyAndBranch struct {
+	OldCompany string `json:"company"`
+	OldBranch  string `json:"branch"`
+	NewCompany string `json:"new_company"`
+	NewBranch  string `json:"new_branch"`
+	BranchName string `json:"branch_name"`
+}
+
+type RenameCompany struct {
+	OldCompany string `json:"old_company"`
+	NewCompany string `json:"new_company"`
+}
+
+type RenameBranch struct {
+	Company   string `json:"company"`
+	OldBranch string `json:"old_branch"`
+	NewBranch string `json:"new_branch"`
+}
+
 type GetBranch struct {
 	Company string    `json:"company"`
 	Branch  []*string `json:"branch"`
@@ -60,4 +79,20 @@ type ResponseBranch struct {
 
 type BranchObject struct {
 	Name string `json:"name"`
+}
+
+type CompanyUpdate struct {
+	Company   string  `json:"company"`
+	Branch    string  `json:"branch"`
+	FirstName *string `json:"first_name"`
+	LastName  *string `json:"last_name"`
+	Password  *string `json:"password"`
+}
+
+type BranchUpdate struct {
+	Company   string  `json:"company"`
+	Branch    string  `json:"branch"`
+	FirstName *string `json:"first_name"`
+	LastName  *string `json:"last_name"`
+	Password  *string `json:"password"`
 }

@@ -126,17 +126,91 @@ func (m *ManageHandler) DeleteBranch(c *fiber.Ctx) error {
 }
 
 func (m *ManageHandler) UpdateCompanyToBranch(c *fiber.Ctx) error {
-	return nil
+	company := c.Params("company")
+	var req domain.CompanyAndBranch
+	req.OldCompany = company
+	if err := c.BodyParser(&req); err != nil {
+		return c.Status(fiber.StatusBadRequest).JSON(&fiber.Map{
+			"error": err.Error(),
+		})
+	}
+
+	res, err := m.manageService.UpdateCompanyToBranch(&req)
+	if err != nil {
+		return c.Status(fiber.StatusInternalServerError).JSON(&fiber.Map{
+			"error": err.Error(),
+		})
+	}
+
+	return c.Status(fiber.StatusOK).JSON(&fiber.Map{
+		"data": *res.Branch + " Company successfully updated",
+	})
+
 }
 
 func (m *ManageHandler) UpdateBranchToCompany(c *fiber.Ctx) error {
-	return nil
+	branch := c.Params("branch")
+	var req domain.CompanyAndBranch
+	req.OldBranch = branch
+	if err := c.BodyParser(&req); err != nil {
+		return c.Status(fiber.StatusBadRequest).JSON(&fiber.Map{
+			"error": err.Error(),
+		})
+	}
+
+	res, err := m.manageService.UpdateBranchToCompany(&req)
+	if err != nil {
+		return c.Status(fiber.StatusInternalServerError).JSON(&fiber.Map{
+			"error": err.Error(),
+		})
+	}
+
+	return c.Status(fiber.StatusOK).JSON(&fiber.Map{
+		"data": res.Company + " Branch successfully updated",
+	})
+
 }
 
 func (m *ManageHandler) UpdateCompanyName(c *fiber.Ctx) error {
-	return nil
+	company := c.Params("company")
+	var req domain.RenameCompany
+	req.OldCompany = company
+	if err := c.BodyParser(&req); err != nil {
+		return c.Status(fiber.StatusBadRequest).JSON(&fiber.Map{
+			"error": err.Error(),
+		})
+	}
+
+	res, err := m.manageService.UpdateCompanyName(&req)
+	if err != nil {
+		return c.Status(fiber.StatusInternalServerError).JSON(&fiber.Map{
+			"error": err.Error(),
+		})
+	}
+
+	return c.Status(fiber.StatusOK).JSON(&fiber.Map{
+		"data": res.Company + " successfully updated",
+	})
 }
 
 func (m *ManageHandler) UpdateBranchName(c *fiber.Ctx) error {
-	return nil
+	branch := c.Params("branch")
+	var req domain.RenameBranch
+	req.OldBranch = branch
+	if err := c.BodyParser(&req); err != nil {
+		return c.Status(fiber.StatusBadRequest).JSON(&fiber.Map{
+			"error": err.Error(),
+		})
+	}
+
+	res, err := m.manageService.UpdateBranchName(&req)
+	if err != nil {
+		return c.Status(fiber.StatusInternalServerError).JSON(&fiber.Map{
+			"error": err.Error(),
+		})
+	}
+
+	return c.Status(fiber.StatusOK).JSON(&fiber.Map{
+		"data": *res.Branch + " successfully updated",
+	})
 }

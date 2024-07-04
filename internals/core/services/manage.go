@@ -150,18 +150,65 @@ func extractLastPartFromSlice(slice []*string) []domain.BranchObject {
 	return result
 }
 
-func (m *manageService) UpdateCompanyToBranch(data *domain.BranchRequest) (*domain.Response, error) {
-	return nil, nil
+func (m *manageService) UpdateCompanyToBranch(data *domain.CompanyAndBranch) (*domain.Response, error) {
+	if data.NewBranch == "" || data.NewCompany == "" || data.OldBranch == "" || data.OldCompany == "" || data.BranchName == "" {
+		return nil, errors.New("All fields are required")
+	}
+
+	err := m.manageRepository.UpdateCompanyToBranch(data)
+	if err != nil {
+		return nil, err
+	}
+
+	return &domain.Response{
+		Branch: &data.BranchName,
+	}, nil
 }
 
-func (m *manageService) UpdateBranchToCompany(data *domain.BranchRequest) (*domain.Response, error) {
-	return nil, nil
+func (m *manageService) UpdateBranchToCompany(data *domain.CompanyAndBranch) (*domain.Response, error) {
+	if data.NewBranch == "" || data.NewCompany == "" || data.OldBranch == "" || data.OldCompany == "" || data.BranchName == "" {
+		return nil, errors.New("All fields are required")
+	}
+
+	err := m.manageRepository.UpdateBranchToCompany(data)
+	if err != nil {
+		return nil, err
+	}
+
+	return &domain.Response{
+		Company: data.NewCompany,
+	}, nil
 }
 
-func (m *manageService) UpdateCompanyName(data *domain.BranchRequest) (*domain.Response, error) {
-	return nil, nil
+func (m *manageService) UpdateCompanyName(data *domain.RenameCompany) (*domain.Response, error) {
+	if data.OldCompany == "" || data.NewCompany == "" {
+		return nil, errors.New("All fields are required")
+	}
+
+	err := m.manageRepository.UpdateCompanyName(data)
+	if err != nil {
+		return nil, err
+	}
+
+	return &domain.Response{
+		Company: data.NewCompany,
+	}, nil
+
 }
 
-func (m *manageService) UpdateBranchName(data *domain.BranchRequest) (*domain.Response, error) {
-	return nil, nil
+func (m *manageService) UpdateBranchName(data *domain.RenameBranch) (*domain.Response, error) {
+	if data.OldBranch == "" || data.NewBranch == "" || data.Company == "" {
+		return nil, errors.New("All fields are required")
+	}
+
+	err := m.manageRepository.UpdateBranchName(data)
+	if err != nil {
+		return nil, err
+	}
+
+	return &domain.Response{
+		Company: data.Company,
+		Branch:  &data.NewBranch,
+	}, nil
+
 }

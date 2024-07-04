@@ -11,10 +11,10 @@ type ManageRepository interface {
 	GetBranch(data *domain.GetBranch) ([]domain.GetBranch, error)
 	CreateCompany(data *domain.Manage) (*domain.Manage, error)
 	CreateBranch(data *domain.Manage) (*domain.Manage, error)
-	UpdateCompanyToBranch(data *domain.Manage) (*domain.Manage, error)
-	UpdateBranchToCompany(data *domain.Manage) (*domain.Manage, error)
-	UpdateCompanyName(data *domain.Manage) (*domain.Manage, error)
-	UpdateBranchName(data *domain.Manage) (*domain.Manage, error)
+	UpdateCompanyToBranch(data *domain.CompanyAndBranch) error
+	UpdateBranchToCompany(data *domain.CompanyAndBranch) error
+	UpdateCompanyName(data *domain.RenameCompany) error
+	UpdateBranchName(data *domain.RenameBranch) error
 	DeleteCompany(data *domain.Manage) error
 	DeleteBranch(data *domain.Manage) error
 }
@@ -24,10 +24,10 @@ type ManageService interface {
 	GetBranch(data *domain.CompanyRequest) ([]domain.ResponseBranch, error)
 	CreateCompany(data *domain.CompanyRequest) (*domain.Response, error)
 	CreateBranch(data *domain.BranchRequest) (*domain.Response, error)
-	UpdateCompanyToBranch(data *domain.BranchRequest) (*domain.Response, error)
-	UpdateBranchToCompany(data *domain.BranchRequest) (*domain.Response, error)
-	UpdateCompanyName(data *domain.BranchRequest) (*domain.Response, error)
-	UpdateBranchName(data *domain.BranchRequest) (*domain.Response, error)
+	UpdateCompanyToBranch(data *domain.CompanyAndBranch) (*domain.Response, error)
+	UpdateBranchToCompany(data *domain.CompanyAndBranch) (*domain.Response, error)
+	UpdateCompanyName(data *domain.RenameCompany) (*domain.Response, error)
+	UpdateBranchName(data *domain.RenameBranch) (*domain.Response, error)
 	DeleteCompany(data *domain.CompanyRequest) error
 	DeleteBranch(data *domain.BranchRequest) error
 }
