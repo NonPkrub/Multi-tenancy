@@ -178,41 +178,41 @@ func (m *manageRepository) UpdateCompanyToBranch(data *domain.CompanyAndBranch) 
 	}()
 
 	//step 1: detach partition => old company, old branch
-	oldBranch := fmt.Sprintf("ALTER TABLE company.%s DETACH PARTITION company.%s;", data.OldCompany, data.OldBranch)
+	oldBranch := fmt.Sprintf(`ALTER TABLE company.%s DETACH PARTITION company.%s;`, data.OldCompany, data.OldBranch)
 	_, err = tx.Exec(oldBranch)
 	if err != nil {
 		return err
 	}
 
 	//step 2: create branch => new branch, new company , branch name
-	newBranch := fmt.Sprintf("CREATE TABLE company.%s PARTITION OF company.%s  FOR VALUES IN ('%s') PARTITION BY LIST (branch);", data.NewBranch, data.NewCompany, data.BranchName)
+	newBranch := fmt.Sprintf(`CREATE TABLE company.%s PARTITION OF company.%s  FOR VALUES IN ('%s');`, data.NewBranch, data.NewCompany, data.BranchName)
 	_, err = tx.Exec(newBranch)
 	if err != nil {
 		return err
 	}
 
 	//step 3: insert data =>  new branch,new company,branch name, old branch
-	query := fmt.Sprintf("INSERT INTO company.%s (company,branch,first_name,last_name,username,password, create_at, update_at,delete_at, role) SELECT '%s','%s',first_name,last_name,username,password, create_at, update_at,delete_at, role FROM company.%s;", data.NewBranch, data.NewCompany, data.BranchName, data.OldBranch)
+	query := fmt.Sprintf(`INSERT INTO company.%s (company,branch,first_name,last_name,username,password, create_at, update_at,delete_at, role) SELECT '%s','%s',first_name,last_name,username,password, create_at, update_at,delete_at, role FROM company.%s;`, data.NewBranch, data.NewCompany, data.BranchName, data.OldBranch)
 	_, err = tx.Exec(query)
 	if err != nil {
 		return err
 	}
 
 	//step 4: update company => new company, new branch, old company, old branch
-	updateQuery := fmt.Sprintf("UPDATE company.onesystem SET company = '%s', branch = '%s' WHERE company = '%s' AND branch = '%s';", data.NewCompany, data.NewBranch, data.OldCompany, data.OldBranch)
+	updateQuery := fmt.Sprintf(`UPDATE company.onesystem SET company = '%s', branch = '%s' WHERE company = '%s' AND branch = '%s';`, data.NewCompany, data.NewBranch, data.OldCompany, data.OldBranch)
 	_, err = tx.Exec(updateQuery)
 	if err != nil {
 		return err
 	}
 
 	//step 5: delete company => old branch, old company
-	deleteBranch := fmt.Sprintf("DROP TABLE company.%s;", data.OldBranch)
+	deleteBranch := fmt.Sprintf(`DROP TABLE company.%s;`, data.OldBranch)
 	_, err = tx.Exec(deleteBranch)
 	if err != nil {
 		return err
 	}
 
-	deleteCompany := fmt.Sprintf("DROP TABLE company.%s;", data.OldCompany)
+	deleteCompany := fmt.Sprintf(`DROP TABLE company.%s;`, data.OldCompany)
 	_, err = tx.Exec(deleteCompany)
 	if err != nil {
 		return err
@@ -235,42 +235,59 @@ func (m *manageRepository) UpdateBranchToCompany(data *domain.CompanyAndBranch) 
 	}()
 
 	// step 1: detach partition => old company,old branch
-	oldBranch := fmt.Sprintf("ALTER TABLE company.%s DETACH PARTITION company.%s;", data.OldCompany, data.OldBranch)
+	oldBranch := fmt.Sprintf(`ALTER TABLE company.%s DETACH PARTITION company.%s;`, data.OldCompany, data.OldBranch)
 	_, err = tx.Exec(oldBranch)
 	if err != nil {
 		return err
 	}
 
 	//step 2: create company => new company, new branch
-	newCompany := fmt.Sprintf("CREATE TABLE company.%s PARTITION OF company.onesystem  FOR VALUES IN ('%s') PARTITION BY LIST (branch);", data.NewCompany, data.NewBranch)
+	newCompany := fmt.Sprintf(`CREATE TABLE company.%s PARTITION OF company.onesystem  FOR VALUES IN ('%s') PARTITION BY LIST (branch);`, data.NewCompany, data.NewBranch)
 	_, err = tx.Exec(newCompany)
 	if err != nil {
 		return err
 	}
 
 	//step 3: create branch => new branch, new company , new branch name
-	initBranch := fmt.Sprintf("CREATE TABLE company.%s PARTITION OF company.%s FOR VALUES IN ('%s');", data.NewBranch, data.NewCompany, data.BranchName)
+	initBranch := fmt.Sprintf(`CREATE TABLE company.%s PARTITION OF company.%s FOR VALUES IN ('%s');`, data.NewBranch, data.NewCompany, data.BranchName)
 	_, err = tx.Exec(initBranch)
 	if err != nil {
 		return err
 	}
 
 	//step 4: insert data into new partition => new branch , new company, new branch name , old branch
-	insertQuery := fmt.Sprintf("INSERT INTO company.%s (company, branch, first_name, last_name, username, password, create_at, update_at, delete_at, role) SELECT '%s', '%s', first_name, last_name, username, password, create_at, update_at, delete_at, role FROM company.%s", data.NewBranch, data.NewCompany, data.BranchName, data.OldBranch)
-	_, err = tx.Exec(insertQuery)
+	insertQuery := `
+    INSERT INTO company.%s (company, branch, first_name, last_name, username, password, create_at, update_at, delete_at, role) 
+    SELECT $1, $2, first_name, last_name, username, password, create_at, update_at, delete_at, role 
+    FROM company.%s 
+    ON CONFLICT (company, branch) DO UPDATE
+    SET
+        first_name = EXCLUDED.first_name,
+        last_name = EXCLUDED.last_name,
+        username = EXCLUDED.username,
+        password = EXCLUDED.password,
+        create_at = EXCLUDED.create_at, 	
+        update_at = EXCLUDED.update_at,
+        delete_at = EXCLUDED.delete_at,
+        role = EXCLUDED.role;
+	`
+
+	insertQuery = fmt.Sprintf(insertQuery, data.NewBranch, data.OldBranch)
+
+	_, err = tx.Exec(insertQuery, data.NewCompany, data.BranchName)
 	if err != nil {
 		return err
 	}
 
 	//step 5: update data => new company , old company , old branch
-	updateQuery := fmt.Sprintf("UPDATE company.onesystem SET company = '%s' WHERE company = '%s' AND branch = '%s'", data.NewCompany, data.OldCompany, data.OldBranch)
+	updateQuery := fmt.Sprintf(`UPDATE company.onesystem SET company = '%s' WHERE company = '%s' AND branch = '%s'`, data.NewCompany, data.OldCompany, data.OldBranch)
 	_, err = tx.Exec(updateQuery)
 	if err != nil {
 		return err
 	}
 
 	//step 6: delete branch => old branch
-	deleteQuery := fmt.Sprintf("DROP TABLE company.%s", data.OldBranch)
+	deleteQuery := fmt.Sprintf(`DROP TABLE company.%s`, data.OldBranch)
 	_, err = tx.Exec(deleteQuery)
 	if err != nil {
 		return err
@@ -293,28 +310,28 @@ func (m *manageRepository) UpdateCompanyName(data *domain.RenameCompany) error {
 	}()
 
 	//step 1: rename company => old company, new company
-	renameQuery := fmt.Sprintf("ALTER TABLE company.%s RENAME TO %s ;", data.OldCompany, data.NewCompany)
+	renameQuery := fmt.Sprintf(`ALTER TABLE company.%s RENAME TO %s ;`, data.OldCompany, data.NewCompany)
 	_, err = tx.Exec(renameQuery)
 	if err != nil {
 		return err
 	}
 
 	//step 2: detach company => new company
-	detachQuery := fmt.Sprintf("ALTER TABLE company.onesystem DETACH PARTITION company.%s;", data.NewCompany)
+	detachQuery := fmt.Sprintf(`ALTER TABLE company.onesystem DETACH PARTITION company.%s;`, data.NewCompany)
 	_, err = tx.Exec(detachQuery)
 	if err != nil {
 		return err
 	}
 
 	//step 3: update company => new company, old company
-	updateQuery := fmt.Sprintf("UPDATE company.%s SET company = '%s' WHERE company = '%s';", data.NewCompany, data.NewCompany, data.OldCompany)
+	updateQuery := fmt.Sprintf(`UPDATE company.%s SET company = '%s' WHERE company = '%s';`, data.NewCompany, data.NewCompany, data.OldCompany)
 	_, err = tx.Exec(updateQuery)
 	if err != nil {
 		return err
 	}
 
 	//step 4: attach company => new company
-	attachQuery := fmt.Sprintf("ALTER TABLE company.onesystem ATTACH PARTITION company.%s FOR VALUES IN ('%s');", data.NewCompany, data.NewCompany)
+	attachQuery := fmt.Sprintf(`ALTER TABLE company.onesystem ATTACH PARTITION company.%s FOR VALUES IN ('%s');`, data.NewCompany, data.NewCompany)
 	_, err = tx.Exec(attachQuery)
 	if err != nil {
 		return err
@@ -337,28 +354,28 @@ func (m *manageRepository) UpdateBranchName(data *domain.RenameBranch) error {
 	}()
 
 	//step 1: rename branch => old branch, new branch
-	renameQuery := fmt.Sprintf("ALTER TABLE company.%s RENAME TO %s;", data.OldBranch, data.NewBranch)
+	renameQuery := fmt.Sprintf(`ALTER TABLE company.%s RENAME TO %s;`, data.OldBranch, data.NewBranch)
 	_, err = tx.Exec(renameQuery)
 	if err != nil {
 		return err
 	}
 
 	//step 2: detach branch => new branch, company
-	detachQuery := fmt.Sprintf("ALTER TABLE company.%s DETACH PARTITION company.%s;", data.Company, data.NewBranch)
+	detachQuery := fmt.Sprintf(`ALTER TABLE company.%s DETACH PARTITION company.%s;`, data.Company, data.NewBranch)
 	_, err = tx.Exec(detachQuery)
 	if err != nil {
 		return err
 	}
 
 	//step 3: update branch => new branch,company, old branch
-	updateQuery := fmt.Sprintf("UPDATE company.%s SET branch = '%s' WHERE company = '%s' AND branch = '%s';", data.Company, data.NewBranch, data.Company, data.OldBranch)
+	updateQuery := fmt.Sprintf(`UPDATE company.%s SET branch = '%s' WHERE company = '%s' AND branch = '%s';`, data.Company, data.NewBranch, data.Company, data.OldBranch)
 	_, err = tx.Exec(updateQuery)
 	if err != nil {
 		return err
 	}
 
 	//step 4: attach branch => new branch, company
-	attachQuery := fmt.Sprintf("ALTER TABLE company.%s ATTACH PARTITION company.%s FOR VALUES IN ('%s');", data.Company, data.NewBranch, data.NewBranch)
+	attachQuery := fmt.Sprintf(`ALTER TABLE company.%s ATTACH PARTITION company.%s FOR VALUES IN ('%s');`, data.Company, data.NewBranch, data.NewBranch)
 	_, err = tx.Exec(attachQuery)
 	if err != nil {
 		return err
