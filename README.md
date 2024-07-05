@@ -24,12 +24,13 @@ Table Partitioning ใช้เพื่อเพิ่มประสิทธ�
 ## Installation
 
 ### Steps
-
 1. Clone the repository:
-   ```sh
-   git clone https://github.com/NonPkrub/Multi-tenancy.git
-   cd Multi-tenancy
-   ```
+   
+```sh
+ git clone https://github.com/NonPkrub/Multi-tenancy.git
+ cd Multi-tenancy
+```
+
 2. Set up the database:
 
 ```sh
@@ -96,10 +97,13 @@ create table company.onesystem (
 ### การสร้าง Company
 
 ใน Go จะเรียก
-
-> Post("/company", s.manage.CreateCompany)
-
-> **_Body_** "company":"company_name"
+```sh
+Post("/company", s.manage.CreateCompany)
+```
+**_Body_** 
+```sh
+"company":"company_name"
+```
 
 sql query:
 
@@ -112,12 +116,10 @@ PARTITION BY LIST (branch)
 ### การสร้าง Branch
 
 ใน Go จะเรียก
-
-> Post("/branch", s.manage.CreateBranch)
+Post("/branch", s.manage.CreateBranch)
 
 > **_Body_** "company": "company_name",
-
-                "branch": "branch_name"
+ "branch": "branch_name"
 
 sql query:
 
