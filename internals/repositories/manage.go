@@ -192,7 +192,7 @@ func (m *manageRepository) UpdateCompanyToBranch(data *domain.CompanyAndBranch) 
 	}
 
 	//step 3: insert data =>  new branch,new company,branch name, old branch
-	query := fmt.Sprintf(`INSERT INTO company.%s (company,branch,first_name,last_name,username,password, create_at, update_at,delete_at, role) SELECT '%s','%s',first_name,last_name,username,password, create_at, update_at,delete_at, role FROM company.%s;`, data.NewBranch, data.NewCompany, data.BranchName, data.OldBranch)
+	query := fmt.Sprintf(`INSERT INTO company.%s (company,branch,id,first_name,last_name,username,password, create_at, update_at,delete_at, role) SELECT '%s','%s',id,first_name,last_name,username,password, create_at, update_at,delete_at, role FROM company.%s;`, data.NewBranch, data.NewCompany, data.BranchName, data.OldBranch)
 	_, err = tx.Exec(query)
 	if err != nil {
 		return err
@@ -256,7 +256,7 @@ func (m *manageRepository) UpdateBranchToCompany(data *domain.CompanyAndBranch) 
 	}
 
 	//step 4: insert data into new partition => new branch , new company, new branch name , old branch
-	insertQuery := fmt.Sprintf("INSERT INTO company.%s (company, branch, first_name, last_name, username, password, create_at, update_at, delete_at, role) SELECT '%s', '%s', first_name, last_name, username, password, create_at, update_at, delete_at, role FROM company.%s", data.NewBranch, data.NewCompany, data.BranchName, data.OldBranch)
+	insertQuery := fmt.Sprintf("INSERT INTO company.%s (company, branch,id, first_name, last_name, username, password, create_at, update_at, delete_at, role) SELECT '%s', '%s',id, first_name, last_name, username, password, create_at, update_at, delete_at, role FROM company.%s", data.NewBranch, data.NewCompany, data.BranchName, data.OldBranch)
 	_, err = tx.Exec(insertQuery)
 	if err != nil {
 		return err

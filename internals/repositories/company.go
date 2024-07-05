@@ -102,7 +102,7 @@ func (r *companyRepository) DeleteData(data *domain.Data) error {
 
 func (r *companyRepository) GetAllData() ([]domain.Data, error) {
 	data := []domain.Data{}
-
+	// admin only
 	query := "SELECT * FROM company.onesystem"
 	rows, err := r.db.Query(query)
 	if err != nil {
