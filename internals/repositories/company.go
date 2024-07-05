@@ -1,6 +1,7 @@
 package repositories
 
 import (
+	"fmt"
 	"go-multi-tenancy/internals/core/domain"
 	"strconv"
 	"strings"
@@ -41,6 +42,56 @@ func (r *companyRepository) GetData(data *domain.Data) (*domain.Data, error) {
 		return nil, err
 	}
 	return data, nil
+}
+
+func (r *companyRepository) GetCompanyData(data *domain.Data) ([]domain.Data, error) {
+	query := fmt.Sprintf("SELECT * FROM company.onesystem WHERE company = '%s'", data.Company)
+
+	rows, err := r.db.Query(query)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	company := []domain.Data{}
+	for rows.Next() {
+		var d domain.Data
+		err := rows.Scan(&d.Company, &d.Branch, &d.ID, &d.FirstName, &d.LastName, &d.Username, &d.Password, &d.CreateAt, &d.UpdateAt, &d.DeleteAt, &d.Role)
+		if err != nil {
+			return nil, err
+		}
+		company = append(company, d)
+	}
+
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return company, nil
+}
+
+func (r *companyRepository) GetBranchData(data *domain.Data) ([]domain.Data, error) {
+	query := fmt.Sprintf("SELECT * FROM company.onesystem WHERE company = '%s' AND branch = '%s'", data.Company, data.Branch)
+
+	rows, err := r.db.Query(query)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	company := []domain.Data{}
+	for rows.Next() {
+		var d domain.Data
+		err := rows.Scan(&d.Company, &d.Branch, &d.ID, &d.FirstName, &d.LastName, &d.Username, &d.Password, &d.CreateAt, &d.UpdateAt, &d.DeleteAt, &d.Role)
+		if err != nil {
+			return nil, err
+		}
+		company = append(company, d)
+	}
+
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return company, nil
 }
 
 func (r *companyRepository) UpdateData(data *domain.Data) (*domain.Data, error) {
@@ -102,7 +153,7 @@ func (r *companyRepository) DeleteData(data *domain.Data) error {
 
 func (r *companyRepository) GetAllData() ([]domain.Data, error) {
 	data := []domain.Data{}
-	// admin only
+
 	query := "SELECT * FROM company.onesystem"
 	rows, err := r.db.Query(query)
 	if err != nil {

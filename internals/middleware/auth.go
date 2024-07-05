@@ -65,9 +65,11 @@ func AuthorizeRole(requiredRole string) fiber.Handler {
 		userRole, ok := c.Locals("role").(string)
 
 		// Check if the user's role is missing or does not match the required role
-		if !ok || userRole != requiredRole {
-			// Return a 403 Forbidden response
-			return c.Status(fiber.StatusForbidden).JSON(fiber.Map{"error": "Forbidden"})
+		if userRole != "super_admin" {
+			if !ok || userRole != requiredRole {
+				// Return a 403 Forbidden response
+				return c.Status(fiber.StatusForbidden).JSON(fiber.Map{"error": "Forbidden"})
+			}
 		}
 
 		// Continue to the next handler in the chain

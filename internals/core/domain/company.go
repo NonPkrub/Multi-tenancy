@@ -7,17 +7,17 @@ import (
 )
 
 type Data struct {
-	Company   string    `json:"company"`
-	Branch    string    `json:"branch"`
-	ID        uuid.UUID `json:"id"`
-	FirstName string    `json:"first_name"`
-	LastName  string    `json:"last_name"`
-	Username  string    `json:"username"`
-	Password  string    `json:"password"`
-	CreateAt  time.Time `json:"create_at"`
-	UpdateAt  time.Time `json:"update_at"`
-	DeleteAt  time.Time `json:"delete_at"`
-	Role      string    `json:"role"`
+	Company   string     `json:"company"`
+	Branch    string     `json:"branch"`
+	ID        uuid.UUID  `json:"id"`
+	FirstName string     `json:"first_name"`
+	LastName  string     `json:"last_name"`
+	Username  string     `json:"username"`
+	Password  string     `json:"password"`
+	CreateAt  time.Time  `json:"create_at"`
+	UpdateAt  *time.Time `json:"update_at"`
+	DeleteAt  *time.Time `json:"delete_at"`
+	Role      string     `json:"role"`
 }
 
 func NewData(company string, branch string, id uuid.UUID, first_name string, last_name string, username string, password string, create_at time.Time, update_at time.Time, delete_at time.Time, role string) *Data {
@@ -30,8 +30,8 @@ func NewData(company string, branch string, id uuid.UUID, first_name string, las
 		Username:  username,
 		Password:  password,
 		CreateAt:  create_at,
-		UpdateAt:  update_at,
-		DeleteAt:  delete_at,
+		UpdateAt:  &update_at,
+		DeleteAt:  &delete_at,
 		Role:      role,
 	}
 }

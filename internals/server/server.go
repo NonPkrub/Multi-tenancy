@@ -35,8 +35,10 @@ func (s *Server) Initialize() {
 	company.Post("/login", s.company.Login)
 	company.Use(middleware.JWTAuth())
 	{
-		company.Get("", middleware.AuthorizeRole("admin"), s.company.GetAllData)   // require admin role
-		company.Get("/data", middleware.AuthorizeRole("admin"), s.company.GetData) // require admin role
+		company.Get("", middleware.AuthorizeRole("super_admin"), s.company.GetAllData)                                   // require admin role
+		company.Get("/data/company/:company", middleware.AuthorizeRole("head_admin"), s.company.GetCompanyData)          // require company admin role
+		company.Get("/data/company/:company/branch/:branch", middleware.AuthorizeRole("admin"), s.company.GetBranchData) // require branch admin role
+		company.Get("/data", middleware.AuthorizeRole("admin"), s.company.GetData)                                       // require admin role
 		company.Get("/data", s.company.GetMe)
 		company.Put("/data", s.company.UpdateData)
 		company.Delete("/data", s.company.DeleteData)

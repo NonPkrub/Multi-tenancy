@@ -234,3 +234,57 @@ func (s *companyService) Admin(data *domain.Admin) (*domain.DataReply, error) {
 	}, nil
 
 }
+
+func (s *companyService) GetCompanyData(data *domain.DataInput) ([]domain.DataReply, error) {
+	req := &domain.Data{
+		Company: data.Company,
+		Branch:  data.Branch,
+	}
+
+	res, err := s.companyRepository.GetCompanyData(req)
+	if err != nil {
+		return nil, err
+	}
+
+	dataCompany := []domain.DataReply{}
+	for _, info := range res {
+		dataCompany = append(dataCompany, domain.DataReply{
+			ID:        info.ID,
+			Company:   info.Company,
+			Branch:    info.Branch,
+			Username:  info.Username,
+			FirstName: info.FirstName,
+			LastName:  info.LastName,
+			CreatedAt: info.CreateAt,
+		})
+	}
+
+	return dataCompany, nil
+}
+
+func (s *companyService) GetBranchData(data *domain.DataInput) ([]domain.DataReply, error) {
+	req := &domain.Data{
+		Company: data.Company,
+		Branch:  data.Branch,
+	}
+
+	res, err := s.companyRepository.GetBranchData(req)
+	if err != nil {
+		return nil, err
+	}
+
+	dataBranch := []domain.DataReply{}
+	for _, info := range res {
+		dataBranch = append(dataBranch, domain.DataReply{
+			ID:        info.ID,
+			Company:   info.Company,
+			Branch:    info.Branch,
+			Username:  info.Username,
+			FirstName: info.FirstName,
+			LastName:  info.LastName,
+			CreatedAt: info.CreateAt,
+		})
+	}
+
+	return dataBranch, nil
+}

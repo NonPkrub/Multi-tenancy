@@ -10,6 +10,8 @@ type CompanyService interface {
 	Register(register *domain.RegisterInput) (*domain.DataReply, error)
 	Login(login *domain.LoginInput) (*domain.DataReply, string, error)
 	GetData(data *domain.DataInput) (*domain.DataReply, error)
+	GetCompanyData(data *domain.DataInput) ([]domain.DataReply, error)
+	GetBranchData(data *domain.DataInput) ([]domain.DataReply, error)
 	UpdateData(data *domain.DataUpdate) (*domain.DataReply, error)
 	GetAllData() ([]domain.DataReply, error)
 	DeleteData(data *domain.DataDelete) error
@@ -24,6 +26,8 @@ type CompanyRepository interface {
 	GetData(data *domain.Data) (*domain.Data, error)
 	UpdateData(data *domain.Data) (*domain.Data, error)
 	GetAllData() ([]domain.Data, error)
+	GetCompanyData(data *domain.Data) ([]domain.Data, error)
+	GetBranchData(data *domain.Data) ([]domain.Data, error)
 	DeleteData(data *domain.Data) error
 	GetMe(data *domain.Data) (*domain.Data, error)
 	GetOne(data *domain.Data) (*domain.Data, error)
@@ -37,6 +41,8 @@ type CompanyHandler interface {
 	GetAllData(c *fiber.Ctx) error
 	DeleteData(c *fiber.Ctx) error
 	GetMe(c *fiber.Ctx) error
+	GetCompanyData(c *fiber.Ctx) error
+	GetBranchData(c *fiber.Ctx) error
 
 	Admin(c *fiber.Ctx) error
 }

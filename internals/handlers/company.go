@@ -173,3 +173,36 @@ func (h *CompanyHandler) Admin(c *fiber.Ctx) error {
 
 	return c.Status(fiber.StatusCreated).JSON(&fiber.Map{"data": res})
 }
+
+func (h *CompanyHandler) GetCompanyData(c *fiber.Ctx) error {
+	company := c.Params("company")
+
+	req := &domain.DataInput{
+		Company: company,
+		Branch:  "",
+	}
+
+	res, err := h.companyService.GetCompanyData(req)
+	if err != nil {
+		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{"error": err.Error()})
+	}
+
+	return c.Status(fiber.StatusOK).JSON(&fiber.Map{"data": res})
+}
+
+func (h *CompanyHandler) GetBranchData(c *fiber.Ctx) error {
+	company := c.Params("company")
+	branch := c.Params("branch")
+
+	req := &domain.DataInput{
+		Company: company,
+		Branch:  branch,
+	}
+
+	res, err := h.companyService.GetBranchData(req)
+	if err != nil {
+		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{"error": err.Error()})
+	}
+
+	return c.Status(fiber.StatusOK).JSON(&fiber.Map{"data": res})
+}
