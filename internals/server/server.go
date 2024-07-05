@@ -43,6 +43,7 @@ func (s *Server) Initialize() {
 	}
 
 	manage := v1.Group("manage")
+	// company.Use(middleware.JWTAuth(), middleware.AuthorizeRole("super_admin"))
 	{
 		manage.Get("/company", s.manage.GetCompany)
 		manage.Get("/branch/:company", s.manage.GetBranch)

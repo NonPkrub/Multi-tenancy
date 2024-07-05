@@ -1,10 +1,15 @@
 package domain
 
-import "time"
+import (
+	"time"
+
+	"github.com/google/uuid"
+)
 
 type Manage struct {
 	Company   string    `json:"company"`
 	Branch    string    `json:"branch"`
+	ID        uuid.UUID `json:"id"`
 	FirstName string    `json:"first_name"`
 	LastName  string    `json:"last_name"`
 	Username  string    `json:"username"`
@@ -15,10 +20,11 @@ type Manage struct {
 	Role      string    `json:"role"`
 }
 
-func NewManage(company string, branch string, first_name string, last_name string, username string, password string, create_at time.Time, update_at time.Time, delete_at time.Time, role string) *Manage {
+func NewManage(company string, branch string, id uuid.UUID, first_name string, last_name string, username string, password string, create_at time.Time, update_at time.Time, delete_at time.Time, role string) *Manage {
 	return &Manage{
 		Company:   company,
 		Branch:    branch,
+		ID:        id,
 		FirstName: first_name,
 		LastName:  last_name,
 		Username:  username,

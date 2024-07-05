@@ -2,11 +2,14 @@ package domain
 
 import (
 	"time"
+
+	"github.com/google/uuid"
 )
 
 type Data struct {
 	Company   string    `json:"company"`
 	Branch    string    `json:"branch"`
+	ID        uuid.UUID `json:"id"`
 	FirstName string    `json:"first_name"`
 	LastName  string    `json:"last_name"`
 	Username  string    `json:"username"`
@@ -17,10 +20,11 @@ type Data struct {
 	Role      string    `json:"role"`
 }
 
-func NewData(company string, branch string, first_name string, last_name string, username string, password string, create_at time.Time, update_at time.Time, delete_at time.Time, role string) *Data {
+func NewData(company string, branch string, id uuid.UUID, first_name string, last_name string, username string, password string, create_at time.Time, update_at time.Time, delete_at time.Time, role string) *Data {
 	return &Data{
 		Company:   company,
 		Branch:    branch,
+		ID:        id,
 		FirstName: first_name,
 		LastName:  last_name,
 		Username:  username,
@@ -49,6 +53,7 @@ type LoginInput struct {
 }
 
 type DataReply struct {
+	ID        uuid.UUID `json:"id"`
 	Username  string    `json:"username"`
 	Company   string    `json:"company"`
 	Branch    string    `json:"branch"`
@@ -63,18 +68,19 @@ type DataInput struct {
 }
 
 type DataUpdate struct {
-	Company   string  `json:"company"`
-	Branch    string  `json:"branch"`
-	Username  string  `json:"username"`
-	FirstName *string `json:"first_name"`
-	LastName  *string `json:"last_name"`
-	Password  *string `json:"password"`
+	Company   string    `json:"company"`
+	Branch    string    `json:"branch"`
+	ID        uuid.UUID `json:"id"`
+	Username  string    `json:"username"`
+	FirstName *string   `json:"first_name"`
+	LastName  *string   `json:"last_name"`
+	Password  *string   `json:"password"`
 }
 
 type DataDelete struct {
-	Company  string `json:"company"`
-	Branch   string `json:"branch"`
-	Username string `json:"username"`
+	Company string    `json:"company"`
+	Branch  string    `json:"branch"`
+	ID      uuid.UUID `json:"id"`
 }
 
 type Admin struct {
@@ -87,7 +93,7 @@ type Admin struct {
 }
 
 type Me struct {
-	Company  string `json:"company"`
-	Branch   string `json:"branch"`
-	Username string `json:"username"`
+	Company string    `json:"company"`
+	Branch  string    `json:"branch"`
+	ID      uuid.UUID `json:"id"`
 }

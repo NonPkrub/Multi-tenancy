@@ -9,26 +9,26 @@ import (
 var jwtKey = []byte("your_secret_key")
 
 type Claims struct {
-	Username string `json:"username"`
-	Company  string `json:"company"`
-	Branch   string `json:"branch"`
-	Role     string `json:"role"`
+	ID      string `json:"id"`
+	Company string `json:"company"`
+	Branch  string `json:"branch"`
+	Role    string `json:"role"`
 	jwt.StandardClaims
 }
 
 // GenerateJWT generates a JWT token with the given user ID, company ID, branch ID, and role.
 // It sets the expiration time to 24 hours from the current time.
 // It returns the generated token as a string and any error encountered.
-func GenerateJWT(username, company, branch, role string) (string, error) {
+func GenerateJWT(id, company, branch, role string) (string, error) {
 	// Set the expiration time to 24 hours from the current time
 	expirationTime := time.Now().Add(24 * time.Hour)
 
 	// Create a Claims object with the given user ID, company ID, branch ID, role, and expiration time
 	claims := &Claims{
-		Username: username,
-		Company:  company,
-		Branch:   branch,
-		Role:     role,
+		ID:      id,
+		Company: company,
+		Branch:  branch,
+		Role:    role,
 		StandardClaims: jwt.StandardClaims{
 			ExpiresAt: expirationTime.Unix(),
 		},

@@ -7,6 +7,7 @@ import (
 
 	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/fiber/v2/middleware/session"
+	"github.com/google/uuid"
 )
 
 var store = session.New()
@@ -79,9 +80,9 @@ func (h *CompanyHandler) GetData(c *fiber.Ctx) error {
 func (h *CompanyHandler) UpdateData(c *fiber.Ctx) error {
 	company := c.Locals("company")
 	branch := c.Locals("branch")
-	username := c.Locals("username")
+	id := c.Locals("id")
 
-	if company == nil || branch == nil || username == nil {
+	if company == nil || branch == nil || id == nil {
 		return c.Status(fiber.StatusUnauthorized).JSON(fiber.Map{"error": "Invalid token"})
 	}
 
@@ -91,9 +92,9 @@ func (h *CompanyHandler) UpdateData(c *fiber.Ctx) error {
 	}
 
 	req := &domain.DataUpdate{
-		Company:  company.(string),
-		Branch:   branch.(string),
-		Username: username.(string),
+		Company: company.(string),
+		Branch:  branch.(string),
+		ID:      id.(uuid.UUID),
 	}
 
 	res, err := h.companyService.UpdateData(req)
@@ -116,16 +117,16 @@ func (h *CompanyHandler) GetAllData(c *fiber.Ctx) error {
 func (h *CompanyHandler) DeleteData(c *fiber.Ctx) error {
 	company := c.Locals("company_id")
 	branch := c.Locals("branch_id")
-	username := c.Locals("user_id")
+	id := c.Locals("id")
 
-	if company == nil || branch == nil || username == nil {
+	if company == nil || branch == nil || id == nil {
 		return c.Status(fiber.StatusUnauthorized).JSON(fiber.Map{"error": "Invalid token"})
 	}
 
 	req := &domain.DataDelete{
-		Company:  company.(string),
-		Branch:   branch.(string),
-		Username: username.(string),
+		Company: company.(string),
+		Branch:  branch.(string),
+		ID:      id.(uuid.UUID),
 	}
 
 	err := h.companyService.DeleteData(req)
@@ -139,16 +140,16 @@ func (h *CompanyHandler) DeleteData(c *fiber.Ctx) error {
 func (h *CompanyHandler) GetMe(c *fiber.Ctx) error {
 	company := c.Locals("company_id")
 	branch := c.Locals("branch_id")
-	username := c.Locals("user_id")
+	id := c.Locals("id")
 
-	if company == nil || branch == nil || username == nil {
+	if company == nil || branch == nil || id == nil {
 		return c.Status(fiber.StatusUnauthorized).JSON(fiber.Map{"error": "Invalid token"})
 	}
 
 	req := &domain.Me{
-		Company:  company.(string),
-		Branch:   branch.(string),
-		Username: username.(string),
+		Company: company.(string),
+		Branch:  branch.(string),
+		ID:      id.(uuid.UUID),
 	}
 
 	res, err := h.companyService.GetMe(req)

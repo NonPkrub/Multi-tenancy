@@ -17,8 +17,8 @@ func NewCompanyRepository(db *sqlx.DB) *companyRepository {
 }
 
 func (r *companyRepository) Register(data *domain.Data) (*domain.Data, error) {
-	query := "INSERT INTO company.onesystem (username, password, company, branch, first_name, last_name, role)   VALUES ($1, $2, $3, $4, $5, $6) RETURNING company, branch, first_name, last_name, username,  created_at"
-	err := r.db.QueryRow(query, data.Username, data.Password, data.Company, data.Branch, data.FirstName, data.LastName, data.Role).Scan(&data.Company, &data.Branch, &data.FirstName, &data.LastName, &data.Username, &data.CreateAt)
+	query := "INSERT INTO company.onesystem (company, branch, first_name, last_name, username, password, role)   VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING company, branch,  id, first_name, last_name, username,  create_at"
+	err := r.db.QueryRow(query, data.Company, data.Branch, data.FirstName, data.LastName, data.Username, data.Password, data.Role).Scan(&data.Company, &data.Branch, &data.ID, &data.FirstName, &data.LastName, &data.Username, &data.CreateAt)
 	if err != nil {
 		return nil, err
 	}
@@ -27,7 +27,7 @@ func (r *companyRepository) Register(data *domain.Data) (*domain.Data, error) {
 
 func (r *companyRepository) Login(data *domain.Data) (*domain.Data, error) {
 	query := "SELECT * FROM company.onesystem WHERE username = $1 AND company = $2 AND branch = $3"
-	err := r.db.QueryRow(query, data.Username, data.Company, data.Branch).Scan(&data.Company, &data.Branch, &data.FirstName, &data.LastName, &data.Username, &data.Password, &data.CreateAt, &data.UpdateAt, &data.DeleteAt, &data.Role)
+	err := r.db.QueryRow(query, data.Username, data.Company, data.Branch).Scan(&data.Company, &data.Branch, &data.ID, &data.FirstName, &data.LastName, &data.Username, &data.Password, &data.CreateAt, &data.UpdateAt, &data.DeleteAt, &data.Role)
 	if err != nil {
 		return nil, err
 	}
@@ -36,7 +36,7 @@ func (r *companyRepository) Login(data *domain.Data) (*domain.Data, error) {
 
 func (r *companyRepository) GetData(data *domain.Data) (*domain.Data, error) {
 	query := " SELECT * FROM company.onesystem WHERE company = $1 AND branch = $2 "
-	err := r.db.QueryRow(query, data.Company, data.Branch).Scan(&data.Company, &data.Branch, &data.FirstName, &data.LastName, &data.Username, &data.Password, &data.CreateAt, &data.UpdateAt, &data.DeleteAt, &data.Role)
+	err := r.db.QueryRow(query, data.Company, data.Branch).Scan(&data.Company, &data.Branch, &data.ID, &data.FirstName, &data.LastName, &data.Username, &data.Password, &data.CreateAt, &data.UpdateAt, &data.DeleteAt, &data.Role)
 	if err != nil {
 		return nil, err
 	}
@@ -82,8 +82,8 @@ func (r *companyRepository) UpdateData(data *domain.Data) (*domain.Data, error) 
 }
 
 func (r *companyRepository) GetOne(data *domain.Data) (*domain.Data, error) {
-	query := "SELECT * FROM company.onesystem WHERE company = $1 AND branch = $2 AND username = $3"
-	err := r.db.QueryRow(query, data.Company, data.Branch, data.Username).Scan(&data.Company, &data.Branch, &data.FirstName, &data.LastName, &data.Username, &data.Password, &data.CreateAt, &data.UpdateAt, &data.DeleteAt, &data.Role)
+	query := "SELECT * FROM company.onesystem WHERE company = $1 AND branch = $2 AND id = $3"
+	err := r.db.QueryRow(query, data.Company, data.Branch, data.ID).Scan(&data.Company, &data.Branch, &data.ID, &data.FirstName, &data.LastName, &data.Username, &data.Password, &data.CreateAt, &data.UpdateAt, &data.DeleteAt, &data.Role)
 	if err != nil {
 		return nil, err
 	}
@@ -91,8 +91,8 @@ func (r *companyRepository) GetOne(data *domain.Data) (*domain.Data, error) {
 }
 
 func (r *companyRepository) DeleteData(data *domain.Data) error {
-	query := "DELETE FROM company.onesystem WHERE company = $1 AND branch = $2 AND username = $3"
-	_, err := r.db.Exec(query, data.Company, data.Branch, data.Username)
+	query := "DELETE FROM company.onesystem WHERE company = $1 AND branch = $2 AND id = $3"
+	_, err := r.db.Exec(query, data.Company, data.Branch, data.ID)
 	if err != nil {
 		return err
 	}
@@ -112,7 +112,7 @@ func (r *companyRepository) GetAllData() ([]domain.Data, error) {
 
 	for rows.Next() {
 		var d domain.Data
-		err := rows.Scan(&d.Company, &d.Branch, &d.FirstName, &d.LastName, &d.Username, &d.Password, &d.CreateAt, &d.UpdateAt, &d.DeleteAt, &d.Role)
+		err := rows.Scan(&d.Company, &d.Branch, &d.ID, &d.FirstName, &d.LastName, &d.Username, &d.Password, &d.CreateAt, &d.UpdateAt, &d.DeleteAt, &d.Role)
 		if err != nil {
 			return nil, err
 		}
@@ -126,8 +126,8 @@ func (r *companyRepository) GetAllData() ([]domain.Data, error) {
 }
 
 func (r *companyRepository) GetMe(data *domain.Data) (*domain.Data, error) {
-	query := "SELECT * FROM company.onesystem WHERE company = $1 AND branch = $2 AND username = $3"
-	err := r.db.QueryRow(query, data.Company, data.Branch, data.Username).Scan(&data.Company, &data.Branch, &data.FirstName, &data.LastName, &data.Username, &data.Password, &data.CreateAt, &data.UpdateAt, &data.DeleteAt, &data.Role)
+	query := "SELECT * FROM company.onesystem WHERE company = $1 AND branch = $2 AND id = $3"
+	err := r.db.QueryRow(query, data.Company, data.Branch, data.ID).Scan(&data.Company, &data.Branch, &data.ID, &data.FirstName, &data.LastName, &data.Username, &data.Password, &data.CreateAt, &data.UpdateAt, &data.DeleteAt, &data.Role)
 	if err != nil {
 		return nil, err
 	}

@@ -40,6 +40,7 @@ func (s *companyService) Register(register *domain.RegisterInput) (*domain.DataR
 	}
 
 	return &domain.DataReply{
+		ID:        res.ID,
 		Company:   res.Company,
 		Branch:    res.Branch,
 		Username:  res.Username,
@@ -72,6 +73,7 @@ func (s *companyService) Login(login *domain.LoginInput) (*domain.DataReply, str
 	}
 
 	return &domain.DataReply{
+		ID:        res.ID,
 		Company:   res.Company,
 		Branch:    res.Branch,
 		Username:  res.Username,
@@ -93,6 +95,7 @@ func (s *companyService) GetData(data *domain.DataInput) (*domain.DataReply, err
 	}
 
 	return &domain.DataReply{
+		ID:        res.ID,
 		Company:   res.Company,
 		Branch:    res.Branch,
 		Username:  res.Username,
@@ -104,6 +107,7 @@ func (s *companyService) GetData(data *domain.DataInput) (*domain.DataReply, err
 
 func (s *companyService) UpdateData(data *domain.DataUpdate) (*domain.DataReply, error) {
 	req := &domain.Data{
+		ID:        data.ID,
 		Company:   data.Company,
 		Branch:    data.Branch,
 		Username:  data.Username,
@@ -118,6 +122,7 @@ func (s *companyService) UpdateData(data *domain.DataUpdate) (*domain.DataReply,
 	}
 
 	return &domain.DataReply{
+		ID:        res.ID,
 		Company:   res.Company,
 		Branch:    res.Branch,
 		Username:  res.Username,
@@ -139,9 +144,9 @@ func checkPassword(password, hash string) bool {
 
 func (s *companyService) DeleteData(data *domain.DataDelete) error {
 	req := &domain.Data{
-		Company:  data.Company,
-		Branch:   data.Branch,
-		Username: data.Username,
+		Company: data.Company,
+		Branch:  data.Branch,
+		ID:      data.ID,
 	}
 
 	err := s.companyRepository.DeleteData(req)
@@ -161,6 +166,7 @@ func (s *companyService) GetAllData() ([]domain.DataReply, error) {
 	data := []domain.DataReply{}
 	for _, info := range res {
 		data = append(data, domain.DataReply{
+			ID:        info.ID,
 			Company:   info.Company,
 			Branch:    info.Branch,
 			Username:  info.Username,
@@ -175,9 +181,9 @@ func (s *companyService) GetAllData() ([]domain.DataReply, error) {
 
 func (s *companyService) GetMe(data *domain.Me) (*domain.DataReply, error) {
 	form := &domain.Data{
-		Company:  data.Company,
-		Branch:   data.Branch,
-		Username: data.Username,
+		Company: data.Company,
+		Branch:  data.Branch,
+		ID:      data.ID,
 	}
 
 	res, err := s.companyRepository.GetMe(form)
@@ -186,6 +192,7 @@ func (s *companyService) GetMe(data *domain.Me) (*domain.DataReply, error) {
 	}
 
 	return &domain.DataReply{
+		ID:        res.ID,
 		Company:   res.Company,
 		Branch:    res.Branch,
 		Username:  res.Username,
@@ -217,6 +224,7 @@ func (s *companyService) Admin(data *domain.Admin) (*domain.DataReply, error) {
 	}
 
 	return &domain.DataReply{
+		ID:        res.ID,
 		Company:   res.Company,
 		Branch:    res.Branch,
 		Username:  res.Username,
