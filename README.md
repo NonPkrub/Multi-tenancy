@@ -116,10 +116,14 @@ PARTITION BY LIST (branch)
 ### การสร้าง Branch
 
 ใน Go จะเรียก
+```sh
 Post("/branch", s.manage.CreateBranch)
-
-> **_Body_** "company": "company_name",
- "branch": "branch_name"
+```
+**_Body_** 
+```sh
+"company": "company_name",
+"branch": "branch_name"
+```
 
 sql query:
 
@@ -131,9 +135,9 @@ CREATE TABLE company.branch_name PARTITION OF company.company_name
 ### การเรียกดู Company
 
 ใน Go จะเรียก
-
-> Get("/company", s.manage.GetCompany)
-
+ ```sh
+Get("/company", s.manage.GetCompany)
+```
 sql query:
 
 ```sql
@@ -145,11 +149,13 @@ SELECT inhrelid::regclass AS company
 ### การเรียกดู Branch
 
 ใน Go จะเรียก
-
-> Get("/branch/:company", s.manage.GetBranch)
-
-> **_Parameter_** :company = company_name
-
+```sh
+Get("/branch/:company", s.manage.GetBranch)
+```
+**_Parameter_** 
+```sh
+:company = company_name
+```
 sql query:
 
 ```sql
@@ -161,11 +167,14 @@ SELECT  inhparent::regclass AS company,inhrelid::regclass AS branch
 ### การลบ Company
 
 ใน Go จะเรียก
+```sh
+Delete("/company/:company", s.manage.DeleteCompany)
+```
 
-> Delete("/company/:company", s.manage.DeleteCompany)
-
-> **_Body_** :company = company_name
-
+**_Body_** 
+```sh
+:company = company_name
+```
 sql query:
 
 ```sql
@@ -176,10 +185,13 @@ DROP TABLE company.company_name
 
 ใน Go จะเรียก
 
-> Delete("/company/:company/branch/:branch", s.manage.DeleteBranch)
-
-> **_Parameter_** :company = company_name , :branch = branch_name
-
+```sh
+Delete("/company/:company/branch/:branch", s.manage.DeleteBranch)
+```
+**_Parameter_** 
+```sh
+:company = company_name , :branch = branch_name
+```
 ส่ง company_name เพื่อ check valid company
 
 sql query:
@@ -203,10 +215,13 @@ SELECT EXISTS (
 ### การสร้าง Company
 
 ใน Go จะเรียก
-
-> Post("/company", s.manage.CreateCompany)
-
-> **_Body_** "company":"company_name"
+```sh
+Post("/company", s.manage.CreateCompany)
+```
+**_Body_** 
+```sh
+"company":"company_name"
+```
 
 sql query:
 
@@ -219,17 +234,20 @@ PARTITION BY LIST (branch)
 ### การอัพ Company ไปเป็น Branch
 
 ใน Go จะเรียก
-
-> Put("/company/:company", s.manage.UpdateCompanyToBranch)
-
-> **_Parameter_** "company":"company_name(old)"
-
-> **_Body_** "branch": "branch_name(old)",
-
-    "new_company": "new_company_name",
-    "new_branch": "new_branch_name",
-    "branch_name": "value_in_new_partition",
-
+```sh
+Put("/company/:company", s.manage.UpdateCompanyToBranch)
+```
+**_Parameter_** 
+```sh
+"company":"company_name(old)"
+```
+**_Body_**
+```sh
+"branch": "branch_name(old)",
+"new_company": "new_company_name",
+"new_branch": "new_branch_name",
+"branch_name": "value_in_new_partition",
+```
 sql query:
 
 ```sql
@@ -259,17 +277,21 @@ DROP TABLE company.company_name(old)
 ### การอัพ Branch ไปเป็น Company
 
 ใน Go จะเรียก
+```sh
+Put("/branch/:branch", s.manage.UpdateBranchToCompany)
+```
+**_Parameter_** 
+```sh
+"branch":"branch_name(old)"
+```
 
-> Put("/branch/:branch", s.manage.UpdateBranchToCompany)
-
-> **_Parameter_** "branch":"branch_name(old)"
-
-> **_Body_** "company": "company_name(old)",
-
-    "new_company": "new_company_name",
-    "new_branch": "new_branch_name",
-    "branch_name": "value_in_new_partition",
-
+**_Body_**
+```sh
+"company": "company_name(old)",
+"new_company": "new_company_name",
+"new_branch": "new_branch_name",
+"branch_name": "value_in_new_partition",
+```
 sql query:
 
 ```sql
@@ -301,13 +323,17 @@ DROP TABLE company.branch_name(old)
 ### การเปลี่ยนชื่อ Company
 
 ใน Go จะเรียก
-
-> Put("/rename/company/:company", s.manage.UpdateCompanyName)
-
-> **_Parameter_** "company":"company_name(old)"
-
-> **_Body_** "new_company": "new_company_name"
-
+```sh
+Put("/rename/company/:company", s.manage.UpdateCompanyName)
+```
+**_Parameter_** 
+```sh
+"company":"company_name(old)"
+```
+**_Body_** 
+```sh
+"new_company": "new_company_name"
+```
 sql query:
 
 ```sql
@@ -328,13 +354,19 @@ ALTER TABLE company.onesystem ATTACH PARTITION company.new_company_name FOR VALU
 ### การเปลี่ยนชื่อ Brand
 
 ใน Go จะเรียก
-
-> Put("/rename/branch/:branch", s.manage.UpdateBranchName)
-
-> **_Parameter_** "branch":"branch_name(old)"
-
-> **_Body_** "company": "company_name(old)", "new_branch": "new_branch_name"
-
+```sh
+Put("/rename/branch/:branch", s.manage.UpdateBranchName)
+```
+**_Parameter_** 
+```sh
+"branch":"branch_name(old)"
+```
+**_Body_** 
+```sh
+"company": "company_name(old)",
+"new_branch": "new_branch_name"
+```
+sql query:
 ```sql
 --step 1: rename branch
 ALTER TABLE company.branch_name(old) RENAME TO new_branch_name;
