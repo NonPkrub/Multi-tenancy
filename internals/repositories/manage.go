@@ -242,7 +242,7 @@ func (m *manageRepository) UpdateBranchToCompany(data *domain.CompanyAndBranch) 
 	}
 
 	//step 2: create company => new company, new branch
-	newCompany := fmt.Sprintf(`CREATE TABLE company.%s PARTITION OF company.onesystem  FOR VALUES IN ('%s') PARTITION BY LIST (branch);`, data.NewCompany, data.NewBranch)
+	newCompany := fmt.Sprintf(`CREATE TABLE company.%s PARTITION OF company.onesystem  FOR VALUES IN ('%s') PARTITION BY LIST (branch);`, data.NewCompany, data.NewCompany)
 	_, err = tx.Exec(newCompany)
 	if err != nil {
 		return err
@@ -256,25 +256,8 @@ func (m *manageRepository) UpdateBranchToCompany(data *domain.CompanyAndBranch) 
 	}
 
 	//step 4: insert data into new partition => new branch , new company, new branch name , old branch
-	insertQuery := `
-    INSERT INTO company.%s (company, branch, first_name, last_name, username, password, create_at, update_at, delete_at, role) 
-    SELECT $1, $2, first_name, last_name, username, password, create_at, update_at, delete_at, role 
-    FROM company.%s 
-    ON CONFLICT (company, branch) DO UPDATE
-    SET
-        first_name = EXCLUDED.first_name,
-        last_name = EXCLUDED.last_name,
-        username = EXCLUDED.username,
-        password = EXCLUDED.password,
-        create_at = EXCLUDED.create_at, 	
-        update_at = EXCLUDED.update_at,
-        delete_at = EXCLUDED.delete_at,
-        role = EXCLUDED.role;
-	`
-
-	insertQuery = fmt.Sprintf(insertQuery, data.NewBranch, data.OldBranch)
-
-	_, err = tx.Exec(insertQuery, data.NewCompany, data.BranchName)
+	insertQuery := fmt.Sprintf("INSERT INTO company.%s (company, branch, first_name, last_name, username, password, create_at, update_at, delete_at, role) SELECT '%s', '%s', first_name, last_name, username, password, create_at, update_at, delete_at, role FROM company.%s", data.NewBranch, data.NewCompany, data.BranchName, data.OldBranch)
+	_, err = tx.Exec(insertQuery)
 	if err != nil {
 		return err
 	}
@@ -368,7 +351,7 @@ func (m *manageRepository) UpdateBranchName(data *domain.RenameBranch) error {
 	}
 
 	//step 3: update branch => new branch,company, old branch
-	updateQuery := fmt.Sprintf(`UPDATE company.%s SET branch = '%s' WHERE company = '%s' AND branch = '%s';`, data.Company, data.NewBranch, data.Company, data.OldBranch)
+	updateQuery := fmt.Sprintf(`UPDATE company.%s SET branch = '%s' WHERE company = '%s' AND branch = '%s';`, data.NewBranch, data.NewBranch, data.Company, data.OldBranch)
 	_, err = tx.Exec(updateQuery)
 	if err != nil {
 		return err
